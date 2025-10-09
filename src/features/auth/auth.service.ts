@@ -2,6 +2,7 @@ import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { AuthRepository } from "./auth.repository.js";
 import { PasswordUtils } from "../../utils/password.js";
 import type { LoginInput } from "./auth.types.js";
+import { generateToken } from "../../helpers/token.js";
 
 export const AuthService = {
   async login(data: LoginInput) {
@@ -14,6 +15,8 @@ export const AuthService = {
 
     if (!isValid) throw new BadRequestError("Invalid credentials");
 
-    return user;
+    const token = generateToken({ id: user.id, email: user.email });
+
+    return { user, token };
   },
 };

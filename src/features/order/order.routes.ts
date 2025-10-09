@@ -9,7 +9,8 @@ const router = Router();
 router.post(
   "/",
   validate(createOrderSchema),
-  asyncHandler(OrderController.create)
+  asyncHandler(OrderController.create),
+  OrderController.create
 );
 
 export default router;

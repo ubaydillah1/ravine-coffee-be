@@ -7,3 +7,4 @@ const router = Router();
 router.post("/login", asyncHandler(AuthContoller.login));
 
 export default router;
+    

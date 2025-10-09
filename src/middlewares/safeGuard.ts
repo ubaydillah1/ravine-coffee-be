@@ -2,13 +2,14 @@ import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 import { config } from "../lib/config.js";
+import type { UserRole } from "@prisma/client";
 
 interface JwtPayload {
   id: string;
   role: string;
 }
 
-export const safeGuard = (allowedRoles?: string | string[]) => {
+export const safeGuard = (allowedRoles?: UserRole | UserRole[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token =
@@ -20,6 +21,7 @@ export const safeGuard = (allowedRoles?: string | string[]) => {
       }
 
       let decoded: JwtPayload;
+
       try {
         decoded = jwt.verify(token, config.jwtSecret) as JwtPayload;
       } catch {

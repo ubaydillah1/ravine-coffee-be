@@ -3,15 +3,9 @@ import { OrderService } from "./order.service.js";
 
 export const OrderController = {
   async create(req: Request, res: Response) {
-    const { userId, items, tableNumber, orderType, paymentMethod } = req.body;
+    const data = req.body;
 
-    await OrderService.create({
-      userId,
-      items,
-      tableNumber,
-      orderType,
-      paymentMethod,
-    });
+    await OrderService.create(data);
 
     res.status(201).json({ message: "Order created successfully" });
   },

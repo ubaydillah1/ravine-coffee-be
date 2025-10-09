@@ -10,3 +10,8 @@ declare global {
     }
   }
 }
+
+type Files = {
+  image?: Express.Multer.File[];
+  [fieldname: string]: Express.Multer.File[] | undefined;
+};

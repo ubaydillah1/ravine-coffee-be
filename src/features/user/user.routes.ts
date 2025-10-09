@@ -4,6 +4,6 @@ import { UserController } from "./user.controller.js";
 
 const router = Router();
 
-router.post("/", asyncHandler(UserController.create));
+router.post("/", asyncHandler(UserController.createCashier));
 
 export default router;
