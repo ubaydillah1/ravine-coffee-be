@@ -1,34 +1,41 @@
+import { UserRole } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
-import type { CashierInput } from "./user.types.js";
-
+import type { CashierType } from "./user.types.js";
 export const UserRepository = {
-  async createCashier(data: CashierInput) {
-    return prisma.user.create({ data });
+  async create(data: CashierType, fileLink?: string) {
+    return prisma.user.create({
+      data: {
+        ...data,
+        ...(fileLink && { avatar: fileLink }),
+      },
+    });
   },
 
-  async existingEmail(email: string) {
+  async getByEmail(email: string) {
     return prisma.user.findUnique({ where: { email } });
   },
 
-  async getUserById(id: string) {
+  async getAll(limit: number = 10, offset: number = 0) {
+    return prisma.user.findMany({
+      where: { role: UserRole.CASHIER },
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  async getById(id: string) {
     return prisma.user.findUnique({ where: { id } });
   },
 
-  async getAllUser(limit: number = 10, offset: number = 0) {
-    return prisma.user.findMany({
-      take: limit,
-      skip: offset,
-      where: { role: "USER" },
-      select: { id: true, email: true, fullName: true },
+  async update(id: string, data: CashierType, fileLink?: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { ...data, ...(fileLink && { avatar: fileLink }) },
     });
   },
 
-  async getAllCashier(limit: number = 10, offset: number = 0) {
-    return prisma.user.findMany({
-      take: limit,
-      skip: offset,
-      where: { role: "CASHIER" },
-      select: { id: true, email: true, fullName: true, avatar: true },
-    });
+  async delete(id: string) {
+    return prisma.user.delete({ where: { id } });
   },
 };

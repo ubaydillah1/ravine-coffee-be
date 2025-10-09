@@ -22,6 +22,7 @@ model User {
   password     String?
   avatar       String?
   dateOfBirth  DateTime?
+  status       UserStatus     @default(ACTIVE)
   city         String?
   role         UserRole       @default(USER)
   createdAt    DateTime       @default(now())
@@ -99,6 +100,11 @@ model Voucher {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   orders        Order[]
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum DiscountType {

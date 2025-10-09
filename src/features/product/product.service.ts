@@ -4,10 +4,10 @@ import {
   uploadToSupabase,
 } from "../../lib/storage/supabaseUploader.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
-import { productRepository } from "./product.repository.js";
+import { ProductRepository } from "./product.repository.js";
 import type { ProductScheme } from "./product.types.js";
 
-export const productService = {
+export const ProductService = {
   async getAllProducts({
     limit,
     offset,
@@ -17,7 +17,7 @@ export const productService = {
     offset: number;
     category?: ProductCategory;
   }) {
-    return await productRepository.getAllProduct(limit, offset, category);
+    return await ProductRepository.getAllProduct(limit, offset, category);
   },
 
   async createProduct(data: ProductScheme, file: Express.Multer.File) {
@@ -25,7 +25,7 @@ export const productService = {
 
     const fileLink = await uploadToSupabase(file, "product-images");
 
-    return await productRepository.createProduct(data, fileLink);
+    return await ProductRepository.createProduct(data, fileLink);
   },
 
   async updateProduct(
@@ -33,7 +33,7 @@ export const productService = {
     data: ProductScheme,
     file?: Express.Multer.File
   ) {
-    const existingProduct = await productRepository.getProductById(id);
+    const existingProduct = await ProductRepository.getProductById(id);
     if (!existingProduct) throw new NotFoundError("Product not found");
 
     let fileLink = existingProduct.image ?? undefined;
@@ -46,7 +46,7 @@ export const productService = {
       fileLink = await uploadToSupabase(file, "product-images");
     }
 
-    const updatedProduct = await productRepository.updateProduct(
+    const updatedProduct = await ProductRepository.updateProduct(
       id,
       data,
       fileLink
@@ -56,13 +56,13 @@ export const productService = {
   },
 
   async deleteProduct(id: string) {
-    const existingProduct = await productRepository.getProductById(id);
+    const existingProduct = await ProductRepository.getProductById(id);
     if (!existingProduct) throw new NotFoundError("Product not found");
 
     if (existingProduct.image) {
       await deleteFromSupabase(existingProduct.image, "product-images");
     }
 
-    return await productRepository.deleteProduct(id);
+    return await ProductRepository.deleteProduct(id);
   },
 };

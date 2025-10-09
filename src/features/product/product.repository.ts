@@ -2,7 +2,7 @@ import type { ProductCategory } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
 import type { ProductScheme } from "./product.types.js";
 
-export const productRepository = {
+export const ProductRepository = {
   async getProductById(id: string) {
     return await prisma.product.findUnique({ where: { id } });
   },

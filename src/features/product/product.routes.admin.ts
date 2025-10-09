@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { productController } from "./product.controller.js";
+import { ProductController } from "./product.controller.js";
 import { asyncHandler } from "../../middlewares/asyncHandler.js";
 import { validate } from "../../middlewares/validate.js";
-import { productScheme, getAllProductsQuerySchema } from "./product.scheme.js";
+import { ProductScheme, getAllProductsQuerySchema } from "./product.scheme.js";
 import { upload } from "../../middlewares/upload.js";
 
 const router = Router();
@@ -10,23 +10,23 @@ const router = Router();
 router.get(
   "/",
   validate(getAllProductsQuerySchema, "query"),
-  asyncHandler(productController.getAllProducts)
+  asyncHandler(ProductController.getAllProducts)
 );
 
 router.post(
   "/",
   upload.single("image"),
-  validate(productScheme),
-  asyncHandler(productController.createProduct)
+  validate(ProductScheme),
+  asyncHandler(ProductController.createProduct)
 );
 
 router.put(
   "/:id",
   upload.single("image"),
-  validate(productScheme),
-  asyncHandler(productController.updateProduct)
+  validate(ProductScheme),
+  asyncHandler(ProductController.updateProduct)
 );
 
-router.delete("/:id", asyncHandler(productController.deleteProduct));
+router.delete("/:id", asyncHandler(ProductController.deleteProduct));
 
 export default router;

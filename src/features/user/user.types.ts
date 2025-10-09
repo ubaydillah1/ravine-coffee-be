@@ -1,4 +1,4 @@
 import type { z } from "zod";
-import type { CashierScheme } from "./user.scheme.js";
+import type { CashierSchema } from "./user.scheme.js";
 
-export type CashierInput = z.infer<typeof CashierScheme>;
+export type CashierType = z.infer<typeof CashierSchema>;
