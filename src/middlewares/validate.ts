@@ -18,6 +18,6 @@ export const validate =
         return;
       }
 
-      next(err);
+      res.status(500).json({ message: (err as Error).message });
     }
   };

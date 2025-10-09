@@ -1,9 +1,9 @@
 import { asyncHandler } from "../../middlewares/asyncHandler.js";
-import { AuthContoller } from "./auth.controller.js";
 import { Router } from "express";
+import { UserController } from "./user.controller.js";
 
 const router = Router();
 
-router.post("/login", asyncHandler(AuthContoller.login));
+router.post("/", asyncHandler(UserController.create));
 
 export default router;

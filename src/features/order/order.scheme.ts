@@ -2,7 +2,7 @@ import { OrderType, PaymentMethod } from "@prisma/client";
 import { z } from "zod";
 
 export const createOrderSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
+  fullName: z.string().min(3, "Full name is required"),
   email: z.email("Invalid email"),
   phoneNumber: z
     .string()
