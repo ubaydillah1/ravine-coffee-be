@@ -19,3 +19,24 @@ export const uploadToSupabase = async (
 
   return publicData.publicUrl;
 };
+
+export const deleteFromSupabase = async (
+  imageUrl: string,
+  bucket: string
+): Promise<void> => {
+  try {
+    if (!imageUrl) return;
+
+    const encodedFileName = imageUrl.split("/").pop();
+    if (!encodedFileName) return;
+
+    const fileName = decodeURIComponent(encodedFileName);
+
+    const { error } = await supabase.storage.from(bucket).remove([fileName]);
+    if (error) {
+      console.error("Delete error:", error.message);
+    }
+  } catch (err) {
+    console.error("Error removing file:", err);
+  }
+};

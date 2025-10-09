@@ -1,12 +1,28 @@
+import type { ProductCategory } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
-import type { CreateProductScheme } from "./product.types.js";
+import type { ProductScheme } from "./product.types.js";
 
 export const productRepository = {
   async getProductById(id: string) {
     return await prisma.product.findUnique({ where: { id } });
   },
 
-  async getAllProduct(limit: number = 12, offset: number = 0) {
+  async updateProduct(id: string, data: ProductScheme, fileLink?: string) {
+    return await prisma.product.update({
+      where: { id },
+      data: {
+        ...data,
+        description: data.description ?? null,
+        ...(fileLink && { image: fileLink }),
+      },
+    });
+  },
+
+  async getAllProduct(
+    limit: number = 12,
+    offset: number = 0,
+    category?: ProductCategory
+  ) {
     return await prisma.product.findMany({
       take: limit,
       skip: offset,
@@ -19,10 +35,11 @@ export const productRepository = {
         price: true,
         description: true,
       },
-    }); 
+      ...(category && { where: { category } }),
+    });
   },
 
-  async createProduct(data: CreateProductScheme, fileLink?: string) {
+  async createProduct(data: ProductScheme, fileLink?: string) {
     return await prisma.product.create({
       data: {
         ...data,
@@ -30,5 +47,9 @@ export const productRepository = {
         ...(fileLink && { image: fileLink }),
       },
     });
+  },
+
+  async deleteProduct(id: string) {
+    return await prisma.product.delete({ where: { id } });
   },
 };
