@@ -43,9 +43,9 @@ model Order {
   taxAmount       Decimal?       @db.Decimal(10, 2)
   totalAmount     Decimal        @db.Decimal(10, 2)
   subTotalAmount  Decimal?       @db.Decimal(10, 2)
-  midtransOrderId String?
-  internalQrCode  String?
-  qrisUrl         String?
+  midtransOrderId String?        @unique
+  internalQrCode  String?        @unique
+  qrisUrl         String?        @unique
   callbackAt      DateTime?
   orderType       OrderType      @default(DINE_IN)
   paymentStatus   PaymentStatus  @default(PENDING)

@@ -1,3 +1,4 @@
+import type { PaymentStatus } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
 import type { CreateOrderInput } from "./order.types.js";
 
@@ -47,6 +48,33 @@ export const OrderRepository = {
           },
         },
       },
+    });
+  },
+  async getOrderById(id: string) {
+    return prisma.order.findUnique({
+      where: { id },
+      include: {
+        OrderItem: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+  },
+
+  async getOrderByMidtransId(midtransOrderId: string) {
+    return prisma.order.findUnique({
+      where: {
+        midtransOrderId: midtransOrderId,
+      },
+    });
+  },
+
+  async updatePaymentStatus(id: string, paymentStatus: PaymentStatus) {
+    return prisma.order.update({
+      where: { id },
+      data: { paymentStatus },
     });
   },
 };
