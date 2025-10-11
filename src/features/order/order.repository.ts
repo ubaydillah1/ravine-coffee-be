@@ -24,9 +24,11 @@ export const OrderRepository = {
 
         OrderItem: {
           create: data.orderItemsData.map((item) => ({
-            productId: item.productId,
             quantity: item.quantity,
             subtotal: item.subtotal,
+            productName: item.productName,
+            productImage: item.productImage,
+            productPrice: item.productPrice,
           })),
         },
       },
@@ -42,11 +44,10 @@ export const OrderRepository = {
         internalQrCode: true,
         OrderItem: {
           select: {
-            productId: true,
             quantity: true,
-            product: {
-              select: { name: true, price: true },
-            },
+            productImage: true,
+            productName: true,
+            productPrice: true,
           },
         },
       },
@@ -61,6 +62,15 @@ export const OrderRepository = {
         createdAt: true,
         orderType: true,
         taxAmount: true,
+        paymentMethod: true,
+        subTotalAmount: true,
+        discountAmount: true,
+        notes: true,
+        Voucher: {
+          select: {
+            code: true,
+          },
+        },
         Customer: {
           select: {
             fullName: true,
@@ -72,13 +82,14 @@ export const OrderRepository = {
           select: {
             quantity: true,
             subtotal: true,
-            product: {
-              select: {
-                image: true,
-                name: true,
-                price: true,
-              },
-            },
+            productImage: true,
+            productName: true,
+            productPrice: true,
+          },
+        },
+        Cashier: {
+          select: {
+            fullName: true,
           },
         },
       },

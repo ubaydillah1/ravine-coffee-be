@@ -22,7 +22,9 @@ export const OrderFactory = {
       const subtotal = product.price.mul(quantity);
 
       return {
-        productId,
+        productName: product.name,
+        productImage: product.image,
+        productPrice: product.price,
         quantity,
         price: product.price,
         subtotal,
@@ -43,7 +45,7 @@ export const OrderFactory = {
       taxAmount,
       discountAmount: new Prisma.Decimal(discountAmount),
       totalAmount,
-      taxRate,  
+      taxRate,
     };
   },
 };

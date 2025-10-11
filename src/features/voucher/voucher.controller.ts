@@ -12,31 +12,39 @@ export const VoucherController = {
 
     res
       .status(200)
-      .json({ message: "Vouchers fetched successfully", vouchers });
+      .json({ message: "Vouchers fetched successfully", result: vouchers });
   },
 
   async getVoucherById(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const voucher = await VoucherService.getVoucherById(id);
-    res.status(200).json({ message: "Voucher fetched successfully", voucher });
+    res
+      .status(200)
+      .json({ message: "Voucher fetched successfully", result: voucher });
   },
 
   async createVoucher(req: Request, res: Response) {
     const data = req.body;
     const voucher = await VoucherService.createVoucher(data);
-    res.status(201).json({ message: "Voucher created successfully", voucher });
+    res
+      .status(201)
+      .json({ message: "Voucher created successfully", result: voucher });
   },
 
   async updateVoucher(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const data = req.body;
     const voucher = await VoucherService.updateVoucher(id, data);
-    res.status(200).json({ message: "Voucher updated successfully", voucher });
+    res
+      .status(200)
+      .json({ message: "Voucher updated successfully", result: voucher });
   },
 
   async deleteVoucher(req: Request, res: Response) {
     const { id } = req.params as { id: string };
-    await VoucherService.deleteVoucher(id);
-    res.status(200).json({ message: "Voucher deleted successfully" });
+    const voucher = await VoucherService.deleteVoucher(id);
+    res
+      .status(200)
+      .json({ message: "Voucher deleted successfully", result: voucher });
   },
 };

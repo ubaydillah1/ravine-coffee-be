@@ -6,6 +6,7 @@ import { Prisma, UserRole } from "@prisma/client";
 import { PaymentService } from "../payment/services/payment.service.js";
 import { UserRepository } from "../user/user.repository.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { get } from "http";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -64,5 +65,13 @@ export const OrderService = {
       qrisUrl: paymentResult.qrisUrl,
       internalQrCode: paymentResult.internalQrCode,
     };
+  },
+
+  async getOrderById(id: string) {
+    return await OrderRepository.getOrderById(id);
+  },
+
+  async getOrders(limit: number, cursor?: string) {
+    return await OrderRepository.getOrders(limit, cursor);
   },
 };

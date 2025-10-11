@@ -6,9 +6,11 @@ export const UserController = {
     const data = req.body;
     const file = req.file as Express.Multer.File;
 
-    await UserService.createCashier(data, file);
+    const cashier = await UserService.createCashier(data, file);
 
-    res.status(201).json({ message: "Cashier created successfully" });
+    res
+      .status(201)
+      .json({ message: "Cashier created successfully", result: cashier });
   },
 
   async getAllCashiers(req: Request, res: Response) {
@@ -16,19 +18,25 @@ export const UserController = {
     const offset = parseInt(req.query.offset as string) || 0;
 
     const cashiers = await UserService.getAllCashiers(limit, offset);
-    res.status(200).json(cashiers);
+    res
+      .status(200)
+      .json({ message: "Cashiers fetched successfully", result: cashiers });
   },
 
   async getCashierById(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const cashier = await UserService.getCashierById(id);
-    res.status(200).json(cashier);
+    res
+      .status(200)
+      .json({ message: "Cashier fetched successfully", result: cashier });
   },
 
   async deleteCashier(req: Request, res: Response) {
     const { id } = req.params as { id: string };
-    await UserService.deleteCashier(id);
-    res.status(200).json({ message: "Cashier deleted successfully" });
+    const cashier = await UserService.deleteCashier(id);
+    res
+      .status(200)
+      .json({ message: "Cashier deleted successfully", result: cashier });
   },
 
   async updateCashier(req: Request, res: Response) {
@@ -36,8 +44,10 @@ export const UserController = {
     const data = req.body;
     const file = req.file as Express.Multer.File;
 
-    await UserService.updateCashier(id, data, file);
+    const cashier = await UserService.updateCashier(id, data, file);
 
-    res.status(200).json({ message: "Cashier updated successfully" });
+    res
+      .status(200)
+      .json({ message: "Cashier updated successfully", result: cashier });
   },
 };

@@ -9,8 +9,12 @@ const router = Router();
 router.post(
   "/",
   validate(CheckoutSchema),
-  asyncHandler(OrderController.create),
-  OrderController.create
+  asyncHandler(OrderController.createOrder),
+  OrderController.createOrder
 );
+
+router.get("/", asyncHandler(OrderController.getOrders));
+
+router.get("/:id", asyncHandler(OrderController.getSingleOrder));
 
 export default router;

@@ -22,8 +22,10 @@ export type CreateOrderInput = {
   notes?: string | null;
 
   orderItemsData: {
-    productId: string;
     quantity: number;
     subtotal: Prisma.Decimal;
+    productName: string;
+    productImage: string | null;
+    productPrice: Prisma.Decimal;
   }[];
 };

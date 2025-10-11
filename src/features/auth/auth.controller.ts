@@ -7,7 +7,7 @@ export const AuthContoller = {
 
     const { token } = await AuthService.login(data);
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful", result: token });
   },
 
   async registerIfNotExists(req: Request, res: Response) {
@@ -15,6 +15,6 @@ export const AuthContoller = {
 
     const user = await AuthService.registerIfNotExists(data);
 
-    res.json({ message: "User registered successfully", user });
+    res.json({ message: "User registered successfully", result: user });
   },
 };
