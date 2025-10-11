@@ -1,13 +1,7 @@
-import type { Request, Response } from "express";
-import { OrderRepository } from "../order/order.repository.js";
 import { PaymentStatus } from "@prisma/client";
+import { OrderRepository } from "../../order/order.repository.js";
 
-export const PaymentService = {
-  async webhook(req: Request, res: Response) {
-    const result = await PaymentService.handleWebhook(req.body);
-    res.status(200).json({ message: "Webhook received", result });
-  },
-
+export const PaymentWebhookService = {
   async handleWebhook(notification: any) {
     const { order_id, transaction_status } = notification;
 

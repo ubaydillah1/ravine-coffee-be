@@ -15,47 +15,62 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  fullName     String?
-  phoneNumber  String?
-  password     String?
-  avatar       String?
-  dateOfBirth  DateTime?
-  status       UserStatus     @default(ACTIVE)
-  city         String?
-  role         UserRole       @default(USER)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Order        Order[]
-  OrderHistory OrderHistory[]
+  id               String         @id @default(uuid())
+  email            String         @unique
+  fullName         String?
+  phoneNumber      String?
+  password         String?
+  avatar           String?
+  dateOfBirth      DateTime?
+  status           UserStatus     @default(ACTIVE)
+  city             String?
+  role             UserRole       @default(USER)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  OrderHistory     OrderHistory[]
+  ordersAsCustomer Order[]        @relation("CustomerRelation")
+  ordersAsCashier  Order[]        @relation("CashierRelation")
 
   @@map("users")
 }
 
 model Order {
-  id              String         @id @default(uuid())
-  Customer        User?          @relation(fields: [customerId], references: [id])
-  customerId      String?
-  tableNumber     String?
-  discountAmount  Decimal?       @db.Decimal(10, 2)
-  taxRate         Decimal?       @default(10) @db.Decimal(5, 2)
-  taxAmount       Decimal?       @db.Decimal(10, 2)
-  totalAmount     Decimal        @db.Decimal(10, 2)
-  subTotalAmount  Decimal?       @db.Decimal(10, 2)
-  midtransOrderId String?        @unique
-  internalQrCode  String?        @unique
-  qrisUrl         String?        @unique
-  callbackAt      DateTime?
-  orderType       OrderType      @default(DINE_IN)
-  paymentStatus   PaymentStatus  @default(PENDING)
-  paymentMethod   PaymentMethod  @default(CASH)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  OrderItem       OrderItem[]
-  Voucher         Voucher?       @relation(fields: [voucherId], references: [id])
-  voucherId       String?
-  OrderHistory    OrderHistory[]
+  id String @id @default(uuid())
+
+  Customer   User?   @relation("CustomerRelation", fields: [customerId], references: [id])
+  customerId String?
+
+  Cashier   User?   @relation("CashierRelation", fields: [cashierId], references: [id])
+  cashierId String?
+
+  tableNumber String?
+  notes       String?
+
+  // PRICE CATEGORY
+  discountAmount Decimal? @db.Decimal(10, 2)
+  taxRate        Decimal? @default(10) @db.Decimal(5, 2)
+  taxAmount      Decimal? @db.Decimal(10, 2)
+  totalAmount    Decimal  @db.Decimal(10, 2)
+  subTotalAmount Decimal? @db.Decimal(10, 2)
+
+  // QRIS PAYMENT
+  midtransOrderId String? @unique
+  internalQrCode  String? @unique
+  qrisUrl         String? @unique
+
+  // STATUS & TYPE
+  orderStatus   OrderStatus   @default(DRAFT)
+  orderType     OrderType     @default(DINE_IN)
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod @default(CASH)
+
+  OrderItem    OrderItem[]
+  Voucher      Voucher?       @relation(fields: [voucherId], references: [id])
+  voucherId    String?
+  OrderHistory OrderHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("orders")
 }
@@ -81,6 +96,14 @@ model OrderItem {
   productId String
   quantity  Int
   subtotal  Decimal @db.Decimal(10, 2)
+
+  // // PRODUCT COPY WHEN DELETED
+  // productName  String
+  // productPrice Decimal @db.Decimal(10, 2)
+  // productImage String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([orderId, productId])
   @@map("order_items")
@@ -169,4 +192,12 @@ enum ProductCategory {
 enum PaymentMethod {
   CASH
   QRIS
+}
+
+enum OrderStatus {
+  COMPLETED
+  INPROGRESS
+  OPENBILL
+  CANCELED
+  DRAFT
 }

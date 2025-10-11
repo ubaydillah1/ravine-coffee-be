@@ -1,12 +1,12 @@
 import { UserRole } from "@prisma/client";
-import {
-  deleteFromSupabase,
-  uploadToSupabase,
-} from "../../lib/storage/supabaseUploader.js";
 import { UserRepository } from "./user.repository.js";
 import type { CashierType } from "./user.types.js";
 import bcrypt from "bcrypt";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
+import {
+  deleteFromSupabase,
+  uploadToSupabase,
+} from "../../utils/supabaseUploader.js";
 
 export const UserService = {
   async createCashier(data: CashierType, file?: Express.Multer.File) {

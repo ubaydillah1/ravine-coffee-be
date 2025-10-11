@@ -1,5 +1,5 @@
-import { BadRequestError } from "../../utils/errors.js";
-import supabase from "../supabase.js";
+import supabase from "../lib/supabase.js";
+import { BadRequestError } from "./errors.js";
 
 export const uploadToSupabase = async (
   file: Express.Multer.File,

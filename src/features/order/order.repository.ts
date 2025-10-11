@@ -1,4 +1,4 @@
-import type { PaymentStatus } from "@prisma/client";
+import { OrderStatus, type PaymentStatus } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
 import type { CreateOrderInput } from "./order.types.js";
 
@@ -7,6 +7,7 @@ export const OrderRepository = {
     return prisma.order.create({
       data: {
         customerId: data.customerId,
+        cashierId: data.cashierId || null,
         tableNumber: data.tableNumber,
         orderType: data.orderType,
         paymentMethod: data.paymentMethod,
@@ -19,6 +20,7 @@ export const OrderRepository = {
         taxAmount: data.taxAmount,
         subTotalAmount: data.subTotalAmount,
         voucherId: data.voucherId || null,
+        notes: data.notes || null,
 
         OrderItem: {
           create: data.orderItemsData.map((item) => ({
@@ -53,10 +55,30 @@ export const OrderRepository = {
   async getOrderById(id: string) {
     return prisma.order.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        tableNumber: true,
+        createdAt: true,
+        orderType: true,
+        taxAmount: true,
+        Customer: {
+          select: {
+            fullName: true,
+            phoneNumber: true,
+            email: true,
+          },
+        },
         OrderItem: {
-          include: {
-            product: true,
+          select: {
+            quantity: true,
+            subtotal: true,
+            product: {
+              select: {
+                image: true,
+                name: true,
+                price: true,
+              },
+            },
           },
         },
       },
@@ -74,7 +96,31 @@ export const OrderRepository = {
   async updatePaymentStatus(id: string, paymentStatus: PaymentStatus) {
     return prisma.order.update({
       where: { id },
-      data: { paymentStatus },
+      data: { paymentStatus, orderStatus: OrderStatus.INPROGRESS },
     });
+  },
+
+  async getOrders(limit = 10, cursor?: string) {
+    const items = await prisma.order.findMany({
+      select: {
+        id: true,
+        createdAt: true,
+        totalAmount: true,
+        tableNumber: true,
+        orderStatus: true,
+        Customer: {
+          select: { fullName: true },
+        },
+      },
+      take: limit + 1,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
+      orderBy: { createdAt: "desc" },
+    });
+
+    let nextCursor = null;
+    if (items.length > limit) {
+      nextCursor = items.pop()?.id;
+    }
+    return { items, nextCursor };
   },
 };

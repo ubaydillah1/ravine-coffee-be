@@ -6,6 +6,7 @@ export type CheckoutInput = z.infer<typeof CheckoutSchema>;
 
 export type CreateOrderInput = {
   customerId: string;
+  cashierId?: string | null;
   tableNumber: string;
   totalAmount: Prisma.Decimal;
   orderType: OrderType;
@@ -18,6 +19,7 @@ export type CreateOrderInput = {
   taxAmount: Prisma.Decimal;
   subTotalAmount: Prisma.Decimal;
   voucherId?: string | null;
+  notes?: string | null;
 
   orderItemsData: {
     productId: string;

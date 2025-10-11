@@ -2,8 +2,10 @@ import { OrderRepository } from "./order.repository.js";
 import { AuthRepository } from "../auth/auth.repository.js";
 import { OrderFactory } from "./order.factory.js";
 import type { CheckoutInput } from "./order.types.js";
-import { PaymentService } from "./payment/payment.service.js";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
+import { PaymentService } from "../payment/services/payment.service.js";
+import { UserRepository } from "../user/user.repository.js";
+import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -15,6 +17,13 @@ export const OrderService = {
         fullName: data.fullName,
         phoneNumber: data.phoneNumber,
       }));
+
+    if (data.cashierId) {
+      const cashier = await UserRepository.getById(data.cashierId);
+      if (!cashier) throw new NotFoundError("Cashier not found");
+      if (cashier.role !== UserRole.CASHIER)
+        throw new BadRequestError("Invalid Cashier Id");
+    }
 
     const discountAmount = data.discount ?? 0;
     const taxRate = data.taxRate ?? 10;
@@ -46,6 +55,8 @@ export const OrderService = {
       taxRate: new Prisma.Decimal(taxRate),
       taxAmount,
       subTotalAmount,
+      cashierId: data.cashierId || null,
+      notes: data.notes || null,
     });
 
     return {

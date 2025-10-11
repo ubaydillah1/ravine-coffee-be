@@ -17,6 +17,7 @@ export const CheckoutSchema = z.object({
 
   taxRate: z.coerce.number().min(0, "Tax rate must be non-negative").optional(),
   paymentMethod: z.enum(PaymentMethod),
+  notes: z.string().optional(),
   items: z
     .array(
       z.object({
@@ -25,4 +26,5 @@ export const CheckoutSchema = z.object({
       })
     )
     .min(1, "Order must contain at least one item"),
+  cashierId: z.string().optional(),
 });

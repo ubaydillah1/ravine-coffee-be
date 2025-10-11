@@ -1,8 +1,6 @@
-import {
-  deleteFromSupabase,
-  uploadToSupabase,
-} from "../../lib/storage/supabaseUploader.js";
+
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { deleteFromSupabase, uploadToSupabase } from "../../utils/supabaseUploader.js";
 import { ProductRepository } from "./product.repository.js";
 import type { ProductScheme, ProductsQuerySchema } from "./product.types.js";
 
