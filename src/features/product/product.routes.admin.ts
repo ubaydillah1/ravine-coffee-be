@@ -2,14 +2,14 @@ import { Router } from "express";
 import { ProductController } from "./product.controller.js";
 import { asyncHandler } from "../../middlewares/asyncHandler.js";
 import { validate } from "../../middlewares/validate.js";
-import { ProductScheme, getAllProductsQuerySchema } from "./product.scheme.js";
+import { ProductScheme, ProductsQuerySchema } from "./product.scheme.js";
 import { upload } from "../../middlewares/upload.js";
 
 const router = Router();
 
 router.get(
   "/",
-  validate(getAllProductsQuerySchema, "query"),
+  validate(ProductsQuerySchema, "query"),
   asyncHandler(ProductController.getAllProducts)
 );
 

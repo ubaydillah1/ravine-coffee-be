@@ -1,10 +1,13 @@
-import type { ProductCategory } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
-import type { ProductScheme } from "./product.types.js";
+import type { ProductScheme, ProductsQuerySchema } from "./product.types.js";
 
 export const ProductRepository = {
   async getProductById(id: string) {
     return await prisma.product.findUnique({ where: { id } });
+  },
+
+  async findManyProductsByIds(ids: string[]) {
+    return prisma.product.findMany({ where: { id: { in: ids } } });
   },
 
   async updateProduct(id: string, data: ProductScheme, fileLink?: string) {
@@ -18,11 +21,9 @@ export const ProductRepository = {
     });
   },
 
-  async getAllProduct(
-    limit: number = 12,
-    offset: number = 0,
-    category?: ProductCategory
-  ) {
+  async getAllProduct({ limit, page, category }: ProductsQuerySchema) {
+    const offset = (page - 1) * limit;
+
     return await prisma.product.findMany({
       take: limit,
       skip: offset,

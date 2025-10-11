@@ -1,7 +1,7 @@
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { AuthRepository } from "./auth.repository.js";
 import { PasswordUtils } from "../../utils/password.js";
-import type { LoginInput } from "./auth.types.js";
+import type { LoginInput, RegisterInput } from "./auth.types.js";
 import { generateToken } from "../../helpers/token.js";
 
 export const AuthService = {
@@ -18,5 +18,15 @@ export const AuthService = {
     const token = generateToken({ id: user.id, email: user.email });
 
     return { user, token };
+  },
+
+  async registerIfNotExists(data: RegisterInput) {
+    const user = await AuthRepository.existingEmail(data.email);
+
+    if (!user) {
+      return await AuthRepository.registerIfNotExist(data);
+    }
+
+    return user;
   },
 };

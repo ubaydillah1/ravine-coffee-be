@@ -1,23 +1,14 @@
-import { ProductCategory } from "@prisma/client";
 import {
   deleteFromSupabase,
   uploadToSupabase,
 } from "../../lib/storage/supabaseUploader.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { ProductRepository } from "./product.repository.js";
-import type { ProductScheme } from "./product.types.js";
+import type { ProductScheme, ProductsQuerySchema } from "./product.types.js";
 
 export const ProductService = {
-  async getAllProducts({
-    limit,
-    offset,
-    category,
-  }: {
-    limit: number;
-    offset: number;
-    category?: ProductCategory;
-  }) {
-    return await ProductRepository.getAllProduct(limit, offset, category);
+  async getAllProducts({ limit, page, category }: ProductsQuerySchema) {
+    return await ProductRepository.getAllProduct({ limit, page, category });
   },
 
   async createProduct(data: ProductScheme, file: Express.Multer.File) {

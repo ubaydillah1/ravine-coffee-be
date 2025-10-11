@@ -1,5 +1,6 @@
 import { ProductCategory } from "@prisma/client";
 import z from "zod";
+import { PaginationSchema } from "../../schemas/pagination.js";
 
 export const ProductScheme = z.object({
   name: z.string().min(3, "Product name is required"),
@@ -8,30 +9,16 @@ export const ProductScheme = z.object({
   category: z.enum(ProductCategory).default("COFFEE"),
 });
 
-export const getAllProductsQuerySchema = z.object({
-  limit: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val) && val > 0, "Limit must be a positive number")
-    .optional()
-    .default(12),
-
-  offset: z
-    .string()
-    .transform((val) => parseInt(val))
-    .refine(
-      (val) => !isNaN(val) && val >= 0,
-      "Offset must be a non-negative number"
-    )
-    .optional()
-    .default(0),
-
+export const ProductsQuerySchema = PaginationSchema.extend({
   category: z
     .string()
-    .transform((val) => val.toUpperCase())
+    .toUpperCase()
     .refine(
       (val) => Object.values(ProductCategory).includes(val as ProductCategory),
-      `Category must be one of: ${Object.values(ProductCategory).join(", ")}`
+      `Category must be one of: ${Object.values(ProductCategory)
+        .join(", ")
+        .toLowerCase()}`
     )
+    .transform((val) => val as ProductCategory)
     .optional(),
 });

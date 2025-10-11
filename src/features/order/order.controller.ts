@@ -5,8 +5,20 @@ export const OrderController = {
   async create(req: Request, res: Response) {
     const data = req.body;
 
-    await OrderService.create(data);
+    const result = await OrderService.create(data);
 
-    res.status(201).json({ message: "Order created successfully" });
+    const response = {
+      message: "Order created successfully",
+      data: {
+        order: result.order,
+        payment: {
+          method: result.order.paymentMethod,
+          qrisUrl: result.qrisUrl ?? null,
+          internalQrCode: result.internalQrCode ?? null,
+        },
+      },
+    };
+
+    res.status(201).json(response);
   },
 };

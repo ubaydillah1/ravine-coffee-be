@@ -14,9 +14,13 @@ export const validate =
 
       const parsedData = schema.parse(data);
 
-      if (source === "body") req.body = parsedData;
-      else if (source === "params") Object.assign(req.params, parsedData);
-      else if (source === "query") Object.assign(req.query, parsedData);
+      if (source === "body") {
+        req.body = parsedData as any;
+      } else if (source === "params") {
+        req.params = parsedData as any;
+      } else if (source === "query") {
+        req.validatedQuery = parsedData; 
+      }
 
       next();
     } catch (err) {

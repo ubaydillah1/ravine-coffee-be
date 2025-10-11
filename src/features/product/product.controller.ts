@@ -7,23 +7,27 @@ export const ProductController = {
     const data = req.body;
     const file = req.file as Express.Multer.File;
 
-    await ProductService.createProduct(data, file);
+    const product = await ProductService.createProduct(data, file);
 
-    res.status(201).json({ message: "Product created successfully" });
+    res.status(201).json({ message: "Product created successfully", product });
   },
 
   async getAllProducts(req: Request, res: Response) {
     const limit = parseInt(req.query.limit as string) || 12;
-    const offset = parseInt(req.query.offset as string) || 0;
-    const category = (req.query.category as string).toUpperCase();
+    const page = parseInt(req.query.offset as string) || 1;
+    const category = (
+      req.query.category as string
+    ).toUpperCase() as ProductCategory;
 
     const products = await ProductService.getAllProducts({
       limit,
-      offset,
-      category: category as ProductCategory,
+      page,
+      category,
     });
 
-    res.status(200).json(products);
+    res
+      .status(200)
+      .json({ message: "Products fetched successfully", products });
   },
 
   async updateProduct(req: Request, res: Response) {
@@ -31,9 +35,9 @@ export const ProductController = {
     const data = req.body;
     const file = req.file as Express.Multer.File | undefined;
 
-    await ProductService.updateProduct(id, data, file);
+    const product = await ProductService.updateProduct(id, data, file);
 
-    res.status(200).json({ message: "Product updated successfully" });
+    res.status(200).json({ message: "Product updated successfully", product });
   },
 
   async deleteProduct(req: Request, res: Response) {
