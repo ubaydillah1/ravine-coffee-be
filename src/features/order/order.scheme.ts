@@ -1,5 +1,5 @@
 import { OrderStatus, OrderType, PaymentMethod } from "@prisma/client";
-import { date, z } from "zod";
+import { z } from "zod";
 import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 
 export const CheckoutSchema = z.object({
