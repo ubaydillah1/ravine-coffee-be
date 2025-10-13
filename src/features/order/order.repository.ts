@@ -116,7 +116,7 @@ export const OrderRepository = {
   async updatePaymentStatus(id: string, paymentStatus: PaymentStatus) {
     return prisma.order.update({
       where: { id },
-      data: { paymentStatus, orderStatus: OrderStatus.INPROGRESS },
+      data: { paymentStatus },
     });
   },
 
@@ -163,5 +163,11 @@ export const OrderRepository = {
       nextCursor = items.pop()?.id;
     }
     return { items, nextCursor };
+  },
+
+  async getOrderByInternalQrCode(code: string) {
+    return prisma.order.findUnique({
+      where: { internalQrCode: code },
+    });
   },
 };

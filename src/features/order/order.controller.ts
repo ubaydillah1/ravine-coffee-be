@@ -15,7 +15,7 @@ export const OrderController = {
         payment: {
           method: result.order.paymentMethod,
           qrisUrl: result.qrisUrl ?? null,
-          internalQrCode: result.internalQrCode ?? null,
+          svgQrCode: result.svgQrCode ?? null,
         },
       },
     };
@@ -60,5 +60,14 @@ export const OrderController = {
 
     const result = await OrderService.updateOrderStatus(id, status);
     res.status(200).json({ message: "Order updated successfully", result });
+  },
+
+  async verifyInternalQRCode(req: Request, res: Response) {
+    const { code } = req.params as { code: string };
+    const result = await OrderService.verifyInternalQris(code);
+
+    res
+      .status(200)
+      .json({ message: "Order updated successfully", result: result.id });
   },
 };

@@ -2,10 +2,12 @@ import { OrderRepository } from "./order.repository.js";
 import { AuthRepository } from "../auth/auth.repository.js";
 import { OrderFactory } from "./order.factory.js";
 import type { CheckoutInput, OrdersQueryInput } from "./order.types.js";
-import { OrderStatus, Prisma, UserRole } from "@prisma/client";
+import { OrderStatus, PaymentStatus, Prisma, UserRole } from "@prisma/client";
 import { PaymentService } from "../payment/services/payment.service.js";
 import { UserRepository } from "../user/user.repository.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { config } from "../../lib/config.js";
+import { generateQrisCodeSVG } from "../../utils/qrcode.js";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -61,10 +63,16 @@ export const OrderService = {
       expiredQrisMidtransUrl: paymentResult.expiredQrisMidtransUrl || null,
     });
 
+    let svgQrCode = null;
+    if (paymentResult.internalQrCode) {
+      const linkVerify = `${config.BASE_URL}/api/orders/verify-qrcode/${paymentResult.internalQrCode}`;
+      svgQrCode = await generateQrisCodeSVG(linkVerify);
+    }
+
     return {
       order,
       qrisUrl: paymentResult.qrisMidtransUrl,
-      internalQrCode: paymentResult.internalQrCode,
+      svgQrCode,
     };
   },
 
@@ -82,6 +90,34 @@ export const OrderService = {
   },
 
   async updateOrderStatus(id: string, status: OrderStatus) {
+    if (status === OrderStatus.CANCELED) {
+      await OrderRepository.updatePaymentStatus(id, PaymentStatus.CANCELLED);
+    }
+
+    if (status === OrderStatus.COMPLETED) {
+      await OrderRepository.updatePaymentStatus(id, PaymentStatus.SUCCESS);
+    }
+
     return await OrderRepository.updateOrderStatus(id, status);
+  },
+
+  async verifyInternalQris(code: string) {
+    const existingOrder = await OrderRepository.getOrderByInternalQrCode(code);
+    if (!existingOrder) throw new NotFoundError("Order not found");
+
+    const expiredAt = existingOrder.expiredInternalQrCode;
+    const now = new Date();
+
+    if (expiredAt && now > expiredAt)
+      throw new BadRequestError(
+        "Order expired, Please tell the customer to order again"
+      );
+
+    const order = await OrderRepository.updateOrderStatus(
+      existingOrder.id,
+      OrderStatus.OPENBILL
+    );
+
+    return order;
   },
 };

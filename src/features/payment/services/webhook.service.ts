@@ -1,4 +1,4 @@
-import { PaymentStatus } from "@prisma/client";
+import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { OrderRepository } from "../../order/order.repository.js";
 
 export const PaymentWebhookService = {
@@ -26,6 +26,7 @@ export const PaymentWebhookService = {
     }
 
     await OrderRepository.updatePaymentStatus(order.id, newStatus);
+    await OrderRepository.updateOrderStatus(order.id, OrderStatus.INPROGRESS);
 
     return { orderId: order.id, newStatus };
   },

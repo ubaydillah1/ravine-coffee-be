@@ -3,6 +3,7 @@ import { PaymentMethod, Prisma } from "@prisma/client";
 import { MidtransService } from "./midtrans.service.js";
 import { randomBytes } from "crypto";
 import { PaymentWebhookService } from "./webhook.service.js";
+import { BadRequestError } from "../../../utils/errors.js";
 
 export const PaymentService = {
   async webhook(req: Request, res: Response) {
@@ -30,17 +31,18 @@ export const PaymentService = {
       }
 
       case PaymentMethod.CASH: {
-        const internalQrCode = randomBytes(4).toString("hex");
+        const code = randomBytes(4).toString("hex");
+
         return {
           qrisMidtransUrl: null,
           midtransOrderId: null,
-          internalQrCode,
+          internalQrCode: code,
           expiredInternalQrCode: fiveMinutesFromNow,
         };
       }
 
       default:
-        throw new Error(`Unsupported payment method: ${method}`);
+        throw new BadRequestError(`Unsupported payment method: ${method}`);
     }
   },
 };

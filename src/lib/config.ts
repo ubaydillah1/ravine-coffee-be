@@ -6,4 +6,5 @@ export const config = {
   MIDTRANS_CLIENT_KEY: process.env.MIDTRANS_CLIENT_KEY!,
   MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY!,
   NODE_ENV: process.env.NODE_ENV!,
+  BASE_URL: process.env.BASE_URL!,
 };

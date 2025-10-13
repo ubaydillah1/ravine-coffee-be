@@ -19,4 +19,9 @@ router.patch(
   asyncHandler(OrderController.updateStatusOrder)
 );
 
+router.get(
+  "/verify-qrcode/:code",
+  asyncHandler(OrderController.verifyInternalQRCode)
+);
+
 export default router;
