@@ -13,7 +13,9 @@ export const OrderRepository = {
         paymentMethod: data.paymentMethod,
         midtransOrderId: data.midtransOrderId || null,
         internalQrCode: data.internalQrCode || null,
-        qrisUrl: data.qrisUrl || null,
+        expiredInternalQrCode: data.expiredInternalQrCode || null,
+        qrisMidtransUrl: data.qrisMidtransUrl || null,
+        expiredQrisMidtransUrl: data.expiredQrisMidtransUrl || null,
         totalAmount: data.totalAmount,
         discountAmount: data.discountAmount,
         taxRate: data.taxRate,
@@ -40,7 +42,7 @@ export const OrderRepository = {
         discountAmount: true,
         totalAmount: true,
         orderType: true,
-        qrisUrl: true,
+        qrisMidtransUrl: true,
         internalQrCode: true,
         OrderItem: {
           select: {

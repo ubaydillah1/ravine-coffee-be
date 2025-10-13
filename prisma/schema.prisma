@@ -54,9 +54,13 @@ model Order {
   subTotalAmount Decimal? @db.Decimal(10, 2)
 
   // QRIS PAYMENT
-  midtransOrderId String? @unique
-  internalQrCode  String? @unique
-  qrisUrl         String? @unique
+  midtransOrderId        String?   @unique
+  qrisMidtransUrl        String?   @unique
+  expiredQrisMidtransUrl DateTime?
+
+  // Cash Payment
+  internalQrCode        String?   @unique
+  expiredInternalQrCode DateTime?
 
   // STATUS & TYPE
   orderStatus   OrderStatus   @default(DRAFT)

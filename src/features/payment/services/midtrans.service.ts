@@ -12,6 +12,11 @@ export const MidtransService = {
         gross_amount: amount,
       },
       qris: { acquirer: "gopay" },
+      custom_expiry: {
+        order_time: formatMidtransTime(),
+        expiry_duration: 5,
+        unit: "minute",
+      },
     });
 
     if (!midtransOrder.actions?.[0]?.url) {
@@ -21,3 +26,21 @@ export const MidtransService = {
     return midtransOrder;
   },
 };
+
+function formatMidtransTime(date = new Date()) {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  const offset = -date.getTimezoneOffset();
+  const sign = offset >= 0 ? "+" : "-";
+  const offsetHours = pad(Math.floor(Math.abs(offset) / 60));
+  const offsetMinutes = pad(Math.abs(offset) % 60);
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} ${sign}${offsetHours}${offsetMinutes}`;
+}

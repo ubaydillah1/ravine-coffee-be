@@ -14,13 +14,15 @@ export type CreateOrderInput = {
   paymentMethod: PaymentMethod;
   midtransOrderId?: string | null;
   internalQrCode?: string | null;
-  qrisUrl?: string | null;
+  qrisMidtransUrl?: string | null;
   discountAmount: Prisma.Decimal;
   taxRate: Prisma.Decimal;
   taxAmount: Prisma.Decimal;
   subTotalAmount: Prisma.Decimal;
   voucherId?: string | null;
   notes?: string | null;
+  expiredInternalQrCode?: Date | null;
+  expiredQrisMidtransUrl?: Date | null;
 
   orderItemsData: {
     quantity: number;

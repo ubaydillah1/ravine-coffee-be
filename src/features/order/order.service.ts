@@ -48,7 +48,7 @@ export const OrderService = {
       orderType: data.orderType,
       paymentMethod: data.paymentMethod,
       midtransOrderId: paymentResult.midtransOrderId,
-      qrisUrl: paymentResult.qrisUrl,
+      qrisMidtransUrl: paymentResult.qrisMidtransUrl,
       orderItemsData,
       internalQrCode: paymentResult.internalQrCode,
       discountAmount: discount,
@@ -57,11 +57,13 @@ export const OrderService = {
       subTotalAmount,
       cashierId: data.cashierId || null,
       notes: data.notes || null,
+      expiredInternalQrCode: paymentResult.expiredInternalQrCode || null,
+      expiredQrisMidtransUrl: paymentResult.expiredQrisMidtransUrl || null,
     });
 
     return {
       order,
-      qrisUrl: paymentResult.qrisUrl,
+      qrisUrl: paymentResult.qrisMidtransUrl,
       internalQrCode: paymentResult.internalQrCode,
     };
   },

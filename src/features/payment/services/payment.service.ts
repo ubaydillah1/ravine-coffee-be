@@ -11,6 +11,8 @@ export const PaymentService = {
   },
 
   async handlePayment(method: PaymentMethod, totalAmount: Prisma.Decimal) {
+    const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
+
     switch (method) {
       case PaymentMethod.QRIS: {
         const midtransOrder = await MidtransService.createQrisPayment(
@@ -18,18 +20,22 @@ export const PaymentService = {
         );
 
         return {
-          qrisUrl: midtransOrder.actions?.[0]?.url ?? null,
+          qrisMidtransUrl: midtransOrder.actions?.[0]?.url ?? null,
           midtransOrderId: midtransOrder.order_id,
           internalQrCode: null,
+          expiredQrisMidtransUrl: midtransOrder.expiry_time
+            ? new Date(midtransOrder.expiry_time.replace(" ", "T") + "+07:00")
+            : null,
         };
       }
 
       case PaymentMethod.CASH: {
         const internalQrCode = randomBytes(4).toString("hex");
         return {
-          qrisUrl: null,
+          qrisMidtransUrl: null,
           midtransOrderId: null,
           internalQrCode,
+          expiredInternalQrCode: fiveMinutesFromNow,
         };
       }
 
