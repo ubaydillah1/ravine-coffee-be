@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "post:build": "prisma generate"
   },
   "keywords": [],
   "type": "module",

@@ -1,8 +1,9 @@
 import type { OrderType, PaymentMethod, Prisma } from "@prisma/client";
-import type { CheckoutSchema } from "./order.scheme.js";
+import type { CheckoutSchema, OrdersQuerySchema } from "./order.scheme.js";
 import type { z } from "zod";
 
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
+export type OrdersQueryInput = z.infer<typeof OrdersQuerySchema>;
 
 export type CreateOrderInput = {
   customerId: string;

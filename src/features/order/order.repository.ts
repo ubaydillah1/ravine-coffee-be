@@ -1,6 +1,6 @@
 import { OrderStatus, type PaymentStatus } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
-import type { CreateOrderInput } from "./order.types.js";
+import type { CreateOrderInput, OrdersQueryInput } from "./order.types.js";
 
 export const OrderRepository = {
   async createOrder(data: CreateOrderInput) {
@@ -104,6 +104,13 @@ export const OrderRepository = {
     });
   },
 
+  async updateOrderStatus(id: string, orderStatus: OrderStatus) {
+    return prisma.order.update({
+      where: { id },
+      data: { orderStatus },
+    });
+  },
+
   async updatePaymentStatus(id: string, paymentStatus: PaymentStatus) {
     return prisma.order.update({
       where: { id },
@@ -111,7 +118,26 @@ export const OrderRepository = {
     });
   },
 
-  async getOrders(limit = 10, cursor?: string) {
+  async getOrders({ limit, cursor, status, orderDate }: OrdersQueryInput) {
+    const whereClause: any = {};
+
+    if (status) {
+      whereClause.orderStatus = status;
+    }
+
+    if (orderDate) {
+      const startOfDay = new Date(orderDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(orderDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      whereClause.createdAt = {
+        gte: startOfDay,
+        lte: endOfDay,
+      };
+    }
+
     const items = await prisma.order.findMany({
       select: {
         id: true,
@@ -124,8 +150,10 @@ export const OrderRepository = {
         },
       },
       take: limit + 1,
-      ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
+      where: whereClause,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
+      ...(status && { where: { orderStatus: status } }),
     });
 
     let nextCursor = null;

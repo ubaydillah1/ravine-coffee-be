@@ -3,14 +3,13 @@ import prisma from "../../lib/prisma.js";
 import type { VoucherInput, VoucherQuerySchema } from "./voucher.types.js";
 
 export const VoucherRepository = {
-  getAllVoucher: async ({ limit, page, status }: VoucherQuerySchema) => {
-    const skip = (page - 1) * limit;
-
-    return await prisma.voucher.findMany({
+  getAllVoucher: async ({ limit, cursor, status }: VoucherQuerySchema) => {
+    const vouchers = await prisma.voucher.findMany({
       take: limit,
-      skip,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
       select: {
+        id: true,
         name: true,
         code: true,
         startDate: true,
@@ -18,8 +17,14 @@ export const VoucherRepository = {
         endDate: true,
         status: true,
       },
-...(status && { where: { status } }),
+      ...(status && { where: { status } }),
     });
+
+    let nextCursor = null;
+
+    if (vouchers.length > limit) nextCursor = vouchers.pop()?.id;
+
+    return { vouchers, nextCursor };
   },
 
   getVoucherByCode: async (code: string) => {

@@ -21,12 +21,10 @@ export const ProductRepository = {
     });
   },
 
-  async getAllProduct({ limit, page, category }: ProductsQuerySchema) {
-    const offset = (page - 1) * limit;
-
-    return await prisma.product.findMany({
+  async getAllProduct({ limit, cursor, category }: ProductsQuerySchema) {
+    const products = await prisma.product.findMany({
       take: limit,
-      skip: offset,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
       select: {
         name: true,
         id: true,
@@ -38,6 +36,11 @@ export const ProductRepository = {
       },
       ...(category && { where: { category } }),
     });
+
+    let nextCursor = null;
+    if (products.length > limit) nextCursor = products.pop()?.id;
+
+    return { products, nextCursor };
   },
 
   async createProduct(data: ProductScheme, fileLink?: string) {

@@ -1,5 +1,6 @@
-import { OrderType, PaymentMethod } from "@prisma/client";
-import { z } from "zod";
+import { OrderStatus, OrderType, PaymentMethod } from "@prisma/client";
+import { date, z } from "zod";
+import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 
 export const CheckoutSchema = z.object({
   fullName: z.string().min(3, "Full name is required"),
@@ -27,4 +28,36 @@ export const CheckoutSchema = z.object({
     )
     .min(1, "Order must contain at least one item"),
   cashierId: z.string().optional(),
+});
+
+export const StatusOrderScheme = z.object({
+  status: z
+    .string()
+    .toUpperCase()
+    .refine((val) => val in OrderStatus, {
+      message: `Status must be one of: ${Object.values(OrderStatus)
+        .join(", ")
+        .toLowerCase()}`,
+    }),
+});
+
+export const OrdersQuerySchema = InfiniteScrollScheme.extend({
+  status: z
+    .string()
+    .toUpperCase()
+    .refine(
+      (val) => Object.values(OrderStatus).includes(val as OrderStatus),
+      `Status must be one of: ${Object.values(OrderStatus)
+        .join(", ")
+        .toLowerCase()}`
+    )
+    .transform((val) => val as OrderStatus)
+    .optional(),
+  orderDate: z.preprocess(
+    (val) => (typeof val === "string" ? new Date(val) : val),
+    z
+      .date()
+      .max(new Date(), { message: "Order date cannot be in the future" })
+      .optional()
+  ),
 });

@@ -1,12 +1,11 @@
 import { OrderRepository } from "./order.repository.js";
 import { AuthRepository } from "../auth/auth.repository.js";
 import { OrderFactory } from "./order.factory.js";
-import type { CheckoutInput } from "./order.types.js";
-import { Prisma, UserRole } from "@prisma/client";
+import type { CheckoutInput, OrdersQueryInput } from "./order.types.js";
+import { OrderStatus, Prisma, UserRole } from "@prisma/client";
 import { PaymentService } from "../payment/services/payment.service.js";
 import { UserRepository } from "../user/user.repository.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
-import { get } from "http";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -71,7 +70,16 @@ export const OrderService = {
     return await OrderRepository.getOrderById(id);
   },
 
-  async getOrders(limit: number, cursor?: string) {
-    return await OrderRepository.getOrders(limit, cursor);
+  async getOrders({ limit, cursor, status, orderDate }: OrdersQueryInput) {
+    return await OrderRepository.getOrders({
+      limit,
+      cursor,
+      status,
+      orderDate,
+    });
+  },
+
+  async updateOrderStatus(id: string, status: OrderStatus) {
+    return await OrderRepository.updateOrderStatus(id, status);
   },
 };

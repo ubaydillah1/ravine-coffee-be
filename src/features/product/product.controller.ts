@@ -14,14 +14,14 @@ export const ProductController = {
 
   async getAllProducts(req: Request, res: Response) {
     const limit = parseInt(req.query.limit as string) || 12;
-    const page = parseInt(req.query.offset as string) || 1;
+    const cursor = req.query.cursor as string | undefined;
     const category = (
       req.query.category as string
     ).toUpperCase() as ProductCategory;
 
     const products = await ProductService.getAllProducts({
       limit,
-      page,
+      cursor,
       category,
     });
 

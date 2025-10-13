@@ -1,12 +1,14 @@
-
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
-import { deleteFromSupabase, uploadToSupabase } from "../../utils/supabaseUploader.js";
+import {
+  deleteFromSupabase,
+  uploadToSupabase,
+} from "../../utils/supabaseUploader.js";
 import { ProductRepository } from "./product.repository.js";
 import type { ProductScheme, ProductsQuerySchema } from "./product.types.js";
 
 export const ProductService = {
-  async getAllProducts({ limit, page, category }: ProductsQuerySchema) {
-    return await ProductRepository.getAllProduct({ limit, page, category });
+  async getAllProducts({ limit, cursor, category }: ProductsQuerySchema) {
+    return await ProductRepository.getAllProduct({ limit, cursor, category });
   },
 
   async createProduct(data: ProductScheme, file: Express.Multer.File) {

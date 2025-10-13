@@ -1,6 +1,6 @@
 import { ProductCategory } from "@prisma/client";
 import z from "zod";
-import { PaginationSchema } from "../../schemas/pagination.js";
+import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 
 export const ProductScheme = z.object({
   name: z.string().min(3, "Product name is required"),
@@ -9,7 +9,7 @@ export const ProductScheme = z.object({
   category: z.enum(ProductCategory).default("COFFEE"),
 });
 
-export const ProductsQuerySchema = PaginationSchema.extend({
+export const ProductsQuerySchema = InfiniteScrollScheme.extend({
   category: z
     .string()
     .toUpperCase()

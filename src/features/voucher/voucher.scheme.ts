@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PaginationSchema } from "../../schemas/pagination.js";
+import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 import { VoucherStatus } from "@prisma/client";
 
 export const VoucherScheme = z
@@ -27,7 +27,7 @@ export const VoucherScheme = z
     path: ["endDate"],
   });
 
-export const VoucherQuerySchema = PaginationSchema.extend({
+export const VoucherQuerySchema = InfiniteScrollScheme.extend({
   status: z
     .string()
     .toUpperCase()

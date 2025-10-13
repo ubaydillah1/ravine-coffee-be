@@ -3,8 +3,8 @@ import type { VoucherInput, VoucherQuerySchema } from "./voucher.types.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 
 export const VoucherService = {
-  async getAll({ limit, page, status }: VoucherQuerySchema) {
-    return await VoucherRepository.getAllVoucher({ limit, page, status });
+  async getAll({ limit, cursor, status }: VoucherQuerySchema) {
+    return await VoucherRepository.getAllVoucher({ limit, cursor, status });
   },
 
   async getVoucherById(id: string) {
