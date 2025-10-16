@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,21 +9,20 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  email            String         @unique
+  id               String     @id @default(uuid())
+  email            String     @unique
   fullName         String?
   phoneNumber      String?
   password         String?
   avatar           String?
   dateOfBirth      DateTime?
-  status           UserStatus     @default(ACTIVE)
+  status           UserStatus @default(ACTIVE)
   city             String?
-  role             UserRole       @default(USER)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  OrderHistory     OrderHistory[]
-  ordersAsCustomer Order[]        @relation("CustomerRelation")
-  ordersAsCashier  Order[]        @relation("CashierRelation")
+  role             UserRole   @default(USER)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  ordersAsCustomer Order[]    @relation("CustomerRelation")
+  ordersAsCashier  Order[]    @relation("CashierRelation")
 
   @@map("users")
 }
@@ -43,7 +36,7 @@ model Order {
   Cashier   User?   @relation("CashierRelation", fields: [cashierId], references: [id])
   cashierId String?
 
-  orderChannel OrderChannel @default(ONLINE)  
+  orderChannel OrderChannel @default(ONLINE)
   tableNumber  String?
   notes        String?
 
@@ -81,14 +74,11 @@ model Order {
 }
 
 model OrderHistory {
-  id          String   @id @default(uuid())
-  order       Order    @relation(fields: [orderId], references: [id])
+  id          String      @id @default(uuid())
+  order       Order       @relation(fields: [orderId], references: [id])
   orderId     String
-  status      String
-  note        String?
-  createdAt   DateTime @default(now())
-  createdBy   User?    @relation(fields: [createdById], references: [id])
-  createdById String?
+  orderStatus OrderStatus
+  createdAt   DateTime    @default(now())
 
   @@map("order_history")
 }
@@ -99,6 +89,9 @@ model OrderItem {
   orderId  String
   quantity Int
   subtotal Decimal @db.Decimal(10, 2)
+
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?
 
   // PRODUCT COPY WHEN DELETED
   productName  String
@@ -121,6 +114,7 @@ model Product {
   category    ProductCategory
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+  OrderItem   OrderItem[]
 
   @@map("products")
 }

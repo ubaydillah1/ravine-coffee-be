@@ -3,7 +3,7 @@ import { VoucherService } from "./voucher.service.js";
 import type { VoucherStatus } from "@prisma/client";
 
 export const VoucherController = {
-  async getAllVouchers(req: Request, res: Response) {
+  async   getAllVouchers(req: Request, res: Response) {
     const status = (req.query.status as string).toUpperCase() as VoucherStatus;
     const limit = parseInt(req.query.limit as string) || 10;
     const cursor = req.query.cursor as string | undefined;

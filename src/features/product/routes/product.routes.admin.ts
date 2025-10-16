@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { ProductController } from "./product.controller.js";
-import { asyncHandler } from "../../middlewares/asyncHandler.js";
-import { validate } from "../../middlewares/validate.js";
-import { ProductScheme, ProductsQuerySchema } from "./product.scheme.js";
-import { upload } from "../../middlewares/upload.js";
+import { ProductController } from "../product.controller.js";
+import { asyncHandler } from "../../../middlewares/asyncHandler.js";
+import { validate } from "../../../middlewares/validate.js";
+import { ProductScheme, ProductsQuerySchema } from "../product.scheme.js";
+import { upload } from "../../../middlewares/upload.js";
 
 const router = Router();
 

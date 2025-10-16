@@ -22,6 +22,7 @@ export const OrderFactory = {
       const subtotal = product.price.mul(quantity);
 
       return {
+        productId: productId,
         productName: product.name,
         productImage: product.image,
         productPrice: product.price,

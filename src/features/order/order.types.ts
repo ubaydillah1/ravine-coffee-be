@@ -36,5 +36,6 @@ export type CreateOrderInput = {
     productName: string;
     productImage: string | null;
     productPrice: Prisma.Decimal;
+    productId: string;
   }[];
 };

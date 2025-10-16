@@ -4,10 +4,16 @@ import { UserController } from "./user.controller.js";
 import { validate } from "../../middlewares/validate.js";
 import { CashierSchema } from "./user.scheme.js";
 import { upload } from "../../middlewares/upload.js";
+import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 
 const router = Router();
 
-router.get("/", asyncHandler(UserController.getAllCashiers));
+router.get(
+  "/",
+  validate(InfiniteScrollScheme, "query"),
+  asyncHandler(UserController.getAllCashiers)
+);
+
 router.get("/:id", asyncHandler(UserController.getCashierById));
 
 router.post(

@@ -15,6 +15,7 @@ import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { config } from "../../lib/config.js";
 import { generateQrisCodeSVG } from "../../utils/qrcode.js";
 import { VoucherRepository } from "../voucher/voucher.repository.js";
+import { HistoryRepository } from "../history/history.repository.js";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -29,7 +30,9 @@ export const OrderService = {
 
     if (data.cashierId) {
       const cashier = await UserRepository.getById(data.cashierId);
+
       if (!cashier) throw new NotFoundError("Cashier not found");
+
       if (cashier.role !== UserRole.CASHIER)
         throw new BadRequestError("Invalid Cashier Id");
     }
@@ -82,6 +85,11 @@ export const OrderService = {
       orderChannel: data.orderChannel,
     });
 
+    HistoryRepository.createHistory({
+      orderId: order.id,
+      orderStatus: OrderStatus.DRAFT,
+    });
+
     let svgQrCode = null;
     if (paymentResult.internalQrCode) {
       const linkVerify = `${config.BASE_URL}/api/orders/verify-qrcode/${paymentResult.internalQrCode}`;
@@ -110,11 +118,27 @@ export const OrderService = {
 
   async updateOrderStatus(id: string, status: OrderStatus) {
     if (status === OrderStatus.CANCELED) {
-      await OrderRepository.updatePaymentStatus(id, PaymentStatus.CANCELLED);
+      const order = await OrderRepository.updatePaymentStatus(
+        id,
+        PaymentStatus.CANCELLED
+      );
+
+      HistoryRepository.createHistory({
+        orderId: order.id,
+        orderStatus: OrderStatus.CANCELED,
+      });
     }
 
     if (status === OrderStatus.COMPLETED) {
-      await OrderRepository.updatePaymentStatus(id, PaymentStatus.SUCCESS);
+      const order = await OrderRepository.updatePaymentStatus(
+        id,
+        PaymentStatus.SUCCESS
+      );
+
+      HistoryRepository.createHistory({
+        orderId: order.id,
+        orderStatus: OrderStatus.COMPLETED,
+      });
     }
 
     return await OrderRepository.updateOrderStatus(id, status);
@@ -136,6 +160,11 @@ export const OrderService = {
       existingOrder.id,
       OrderStatus.OPENBILL
     );
+
+    HistoryRepository.createHistory({
+      orderId: order.id,
+      orderStatus: OrderStatus.OPENBILL,
+    });
 
     return order;
   },

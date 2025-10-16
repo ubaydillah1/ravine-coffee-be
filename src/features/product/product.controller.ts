@@ -27,7 +27,7 @@ export const ProductController = {
 
     res
       .status(200)
-      .json({ message: "Products fetched successfully", products });
+      .json({ message: "Products fetched successfully", result: products });
   },
 
   async updateProduct(req: Request, res: Response) {
@@ -37,7 +37,9 @@ export const ProductController = {
 
     const product = await ProductService.updateProduct(id, data, file);
 
-    res.status(200).json({ message: "Product updated successfully", product });
+    res
+      .status(200)
+      .json({ message: "Product updated successfully", result: product });
   },
 
   async deleteProduct(req: Request, res: Response) {

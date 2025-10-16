@@ -7,6 +7,9 @@ export const OrderController = {
   async createOrder(req: Request, res: Response) {
     const data = req.body;
 
+    if (data.tableNumber && data.tableNumber < 1 && data.tableNumber > 15)
+      throw new Error("Invalid table number range (1-15)");
+
     const result = await OrderService.create(data);
 
     const response = {

@@ -15,28 +15,23 @@ export const UserController = {
 
   async getAllCashiers(req: Request, res: Response) {
     const limit = parseInt(req.query.limit as string) || 10;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const cursor = (req.query.cursor as string) || undefined;
 
-    const cashiers = await UserService.getAllCashiers(limit, offset);
-    res
-      .status(200)
-      .json({ message: "Cashiers fetched successfully", result: cashiers });
+    const cashiers = await UserService.getAllCashiers({ limit, cursor });
+
+    res.json({ message: "Cashiers fetched successfully", result: cashiers });
   },
 
   async getCashierById(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const cashier = await UserService.getCashierById(id);
-    res
-      .status(200)
-      .json({ message: "Cashier fetched successfully", result: cashier });
+    res.json({ message: "Cashier fetched successfully", result: cashier });
   },
 
   async deleteCashier(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const cashier = await UserService.deleteCashier(id);
-    res
-      .status(200)
-      .json({ message: "Cashier deleted successfully", result: cashier });
+    res.json({ message: "Cashier deleted successfully", result: cashier });
   },
 
   async updateCashier(req: Request, res: Response) {
@@ -46,8 +41,6 @@ export const UserController = {
 
     const cashier = await UserService.updateCashier(id, data, file);
 
-    res
-      .status(200)
-      .json({ message: "Cashier updated successfully", result: cashier });
+    res.json({ message: "Cashier updated successfully", result: cashier });
   },
 };

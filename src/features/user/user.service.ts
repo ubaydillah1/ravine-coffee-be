@@ -1,6 +1,6 @@
 import { UserRole } from "@prisma/client";
 import { UserRepository } from "./user.repository.js";
-import type { CashierType } from "./user.types.js";
+import type { CashierQueryType, CashierType } from "./user.types.js";
 import bcrypt from "bcrypt";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import {
@@ -35,8 +35,8 @@ export const UserService = {
     );
   },
 
-  async getAllCashiers(limit: number, offset: number) {
-    return UserRepository.getAll(limit, offset);
+  async getAllCashiers({ limit, cursor }: CashierQueryType) {
+    return UserRepository.getAll({ limit, cursor });
   },
 
   async getCashierById(id: string) {

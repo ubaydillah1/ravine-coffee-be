@@ -31,6 +31,7 @@ export const OrderRepository = {
             subtotal: item.subtotal,
             productName: item.productName,
             productImage: item.productImage,
+            productId: item.productId,
             productPrice: item.productPrice,
           })),
         },

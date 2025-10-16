@@ -1,6 +1,7 @@
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { OrderRepository } from "../../order/order.repository.js";
 import { VoucherRepository } from "../../voucher/voucher.repository.js";
+import { HistoryRepository } from "../../history/history.repository.js";
 
 export const PaymentWebhookService = {
   async handleWebhook(notification: any) {
@@ -17,6 +18,11 @@ export const PaymentWebhookService = {
     ) {
       newStatus = PaymentStatus.SUCCESS;
 
+      HistoryRepository.createHistory({
+        orderId: order.id,
+        orderStatus: OrderStatus.COMPLETED,
+      });
+
       if (order.voucherId) {
         await VoucherRepository.addOneUsage(order.voucherId);
       }
@@ -31,6 +37,11 @@ export const PaymentWebhookService = {
       transaction_status === "deny" ||
       transaction_status === "expire"
     ) {
+      HistoryRepository.createHistory({
+        orderId: order.id,
+        orderStatus: OrderStatus.CANCELED,
+      });
+
       newStatus = PaymentStatus.CANCELLED;
     }
 

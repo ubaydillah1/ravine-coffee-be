@@ -1,6 +1,6 @@
 import { UserRole } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
-import type { CashierType } from "./user.types.js";
+import type { CashierQueryType, CashierType } from "./user.types.js";
 export const UserRepository = {
   async create(data: CashierType, fileLink?: string) {
     return prisma.user.create({
@@ -15,13 +15,19 @@ export const UserRepository = {
     return prisma.user.findUnique({ where: { email } });
   },
 
-  async getAll(limit: number = 10, offset: number = 0) {
-    return prisma.user.findMany({
+  async getAll({ limit, cursor }: CashierQueryType) {
+    const cashier = await prisma.user.findMany({
       where: { role: UserRole.CASHIER },
-      skip: offset,
       take: limit,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
     });
+
+    let nextCursor = null;
+
+    if (cashier.length > limit) nextCursor = cashier.pop()?.id;
+
+    return { cashier, nextCursor };
   },
 
   async getById(id: string) {

@@ -8,3 +8,5 @@ export const InfiniteScrollScheme = z.object({
     .default(12),
   cursor: z.string().optional(),
 });
+
+export type InfiniteScrollScheme = z.infer<typeof InfiniteScrollScheme>;
