@@ -1,4 +1,9 @@
-import { OrderStatus, OrderType, PaymentMethod } from "@prisma/client";
+import {
+  OrderChannel,
+  OrderStatus,
+  OrderType,
+  PaymentMethod,
+} from "@prisma/client";
 import { z } from "zod";
 import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
 
@@ -9,13 +14,8 @@ export const CheckoutSchema = z.object({
     .string()
     .regex(/^(?:\+62|62|0)[2-9][0-9]{7,11}$/, "Invalid phone number format"),
   tableNumber: z.string().min(1, "Table number is required"),
-
+  voucherCode: z.string().optional(),
   orderType: z.enum(OrderType),
-  discount: z.coerce
-    .number()
-    .min(0, "Discount must be non-negative")
-    .optional(),
-
   taxRate: z.coerce.number().min(0, "Tax rate must be non-negative").optional(),
   paymentMethod: z.enum(PaymentMethod),
   notes: z.string().optional(),
@@ -28,6 +28,7 @@ export const CheckoutSchema = z.object({
     )
     .min(1, "Order must contain at least one item"),
   cashierId: z.string().optional(),
+  orderChannel: z.enum(OrderChannel),
 });
 
 export const StatusOrderScheme = z.object({

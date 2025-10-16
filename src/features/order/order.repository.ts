@@ -23,6 +23,7 @@ export const OrderRepository = {
         subTotalAmount: data.subTotalAmount,
         voucherId: data.voucherId || null,
         notes: data.notes || null,
+        orderChannel: data.orderChannel,
 
         OrderItem: {
           create: data.orderItemsData.map((item) => ({
@@ -36,20 +37,38 @@ export const OrderRepository = {
       },
       select: {
         id: true,
+        tableNumber: true,
+        createdAt: true,
+        orderType: true,
+        taxAmount: true,
         paymentMethod: true,
         subTotalAmount: true,
-        taxAmount: true,
         discountAmount: true,
-        totalAmount: true,
-        orderType: true,
-        qrisMidtransUrl: true,
-        internalQrCode: true,
+        notes: true,
+        Voucher: {
+          select: {
+            code: true,
+          },
+        },
+        Customer: {
+          select: {
+            fullName: true,
+            phoneNumber: true,
+            email: true,
+          },
+        },
         OrderItem: {
           select: {
             quantity: true,
+            subtotal: true,
             productImage: true,
             productName: true,
             productPrice: true,
+          },
+        },
+        Cashier: {
+          select: {
+            fullName: true,
           },
         },
       },

@@ -1,4 +1,9 @@
-import type { OrderType, PaymentMethod, Prisma } from "@prisma/client";
+import type {
+  OrderChannel,
+  OrderType,
+  PaymentMethod,
+  Prisma,
+} from "@prisma/client";
 import type { CheckoutSchema, OrdersQuerySchema } from "./order.scheme.js";
 import type { z } from "zod";
 
@@ -23,6 +28,7 @@ export type CreateOrderInput = {
   notes?: string | null;
   expiredInternalQrCode?: Date | null;
   expiredQrisMidtransUrl?: Date | null;
+  orderChannel: OrderChannel;
 
   orderItemsData: {
     quantity: number;

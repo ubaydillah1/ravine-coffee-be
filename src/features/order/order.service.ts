@@ -2,12 +2,19 @@ import { OrderRepository } from "./order.repository.js";
 import { AuthRepository } from "../auth/auth.repository.js";
 import { OrderFactory } from "./order.factory.js";
 import type { CheckoutInput, OrdersQueryInput } from "./order.types.js";
-import { OrderStatus, PaymentStatus, Prisma, UserRole } from "@prisma/client";
+import {
+  OrderStatus,
+  PaymentStatus,
+  Prisma,
+  UserRole,
+  type Voucher,
+} from "@prisma/client";
 import { PaymentService } from "../payment/services/payment.service.js";
 import { UserRepository } from "../user/user.repository.js";
 import { BadRequestError, NotFoundError } from "../../utils/errors.js";
 import { config } from "../../lib/config.js";
 import { generateQrisCodeSVG } from "../../utils/qrcode.js";
+import { VoucherRepository } from "../voucher/voucher.repository.js";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
@@ -27,7 +34,12 @@ export const OrderService = {
         throw new BadRequestError("Invalid Cashier Id");
     }
 
-    const discountAmount = data.discount ?? 0;
+    let voucher: Voucher | null = null;
+
+    if (data.voucherCode) {
+      voucher = await VoucherRepository.getVoucherByCode(data.voucherCode);
+    }
+
     const taxRate = data.taxRate ?? 10;
 
     const {
@@ -36,11 +48,16 @@ export const OrderService = {
       taxAmount,
       discountAmount: discount,
       totalAmount,
-    } = await OrderFactory.buildOrderItems(data.items, discountAmount, taxRate);
+    } = await OrderFactory.buildOrderItems(
+      data.items,
+      voucher?.discountValue,
+      taxRate
+    );
 
     const paymentResult = await PaymentService.handlePayment(
       data.paymentMethod,
-      totalAmount
+      totalAmount,
+      data.orderChannel
     );
 
     const order = await OrderRepository.createOrder({
@@ -61,6 +78,8 @@ export const OrderService = {
       notes: data.notes || null,
       expiredInternalQrCode: paymentResult.expiredInternalQrCode || null,
       expiredQrisMidtransUrl: paymentResult.expiredQrisMidtransUrl || null,
+      voucherId: voucher?.id || null,
+      orderChannel: data.orderChannel,
     });
 
     let svgQrCode = null;

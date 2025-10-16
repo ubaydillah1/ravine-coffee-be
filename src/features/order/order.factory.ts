@@ -5,7 +5,7 @@ import { ProductRepository } from "../product/product.repository.js";
 export const OrderFactory = {
   async buildOrderItems(
     items: { productId: string; quantity: number }[],
-    discountAmount: number = 0,
+    discountAmount: Prisma.Decimal = new Prisma.Decimal(0),
     taxRate: number = 10
   ) {
     if (!items.length) throw new BadRequestError("Items empty");

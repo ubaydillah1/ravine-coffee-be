@@ -1,5 +1,6 @@
 import { OrderStatus, PaymentStatus } from "@prisma/client";
 import { OrderRepository } from "../../order/order.repository.js";
+import { VoucherRepository } from "../../voucher/voucher.repository.js";
 
 export const PaymentWebhookService = {
   async handleWebhook(notification: any) {
@@ -15,9 +16,17 @@ export const PaymentWebhookService = {
       transaction_status === "settlement"
     ) {
       newStatus = PaymentStatus.SUCCESS;
-    } else if (transaction_status === "pending") {
+
+      if (order.voucherId) {
+        await VoucherRepository.addOneUsage(order.voucherId);
+      }
+    }
+
+    if (transaction_status === "pending") {
       newStatus = PaymentStatus.PENDING;
-    } else if (
+    }
+
+    if (
       transaction_status === "cancel" ||
       transaction_status === "deny" ||
       transaction_status === "expire"

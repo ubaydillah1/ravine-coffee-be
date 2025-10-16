@@ -14,7 +14,7 @@ export const MidtransService = {
       qris: { acquirer: "gopay" },
       custom_expiry: {
         order_time: formatMidtransTime(),
-        expiry_duration: 5,
+        expiry_duration: 10,
         unit: "minute",
       },
     });

@@ -27,6 +27,13 @@ export const VoucherRepository = {
     return { vouchers, nextCursor };
   },
 
+  addOneUsage: async (id: string) => {
+    return await prisma.voucher.update({
+      where: { id },
+      data: { currentUsage: { increment: 1 } },
+    });
+  },
+
   getVoucherByCode: async (code: string) => {
     return await prisma.voucher.findUnique({ where: { code } });
   },

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { OrderService } from "./order.service.js";
-import type { OrderStatus } from "@prisma/client";
+import { OrderStatus } from "@prisma/client";
+import { VoucherRepository } from "../voucher/voucher.repository.js";
 
 export const OrderController = {
   async createOrder(req: Request, res: Response) {
@@ -59,6 +60,11 @@ export const OrderController = {
     const status = (req.body.status as string).toUpperCase() as OrderStatus;
 
     const result = await OrderService.updateOrderStatus(id, status);
+
+    if (result.orderStatus === OrderStatus.COMPLETED && result.voucherId) {
+      await VoucherRepository.addOneUsage(result.voucherId);
+    }
+
     res.status(200).json({ message: "Order updated successfully", result });
   },
 

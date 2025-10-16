@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { PaymentMethod, Prisma } from "@prisma/client";
+import { OrderChannel, PaymentMethod, Prisma } from "@prisma/client";
 import { MidtransService } from "./midtrans.service.js";
 import { randomBytes } from "crypto";
 import { PaymentWebhookService } from "./webhook.service.js";
@@ -11,8 +11,12 @@ export const PaymentService = {
     res.status(200).json({ message: "Webhook received", result });
   },
 
-  async handlePayment(method: PaymentMethod, totalAmount: Prisma.Decimal) {
-    const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
+  async handlePayment(
+    method: PaymentMethod,
+    totalAmount: Prisma.Decimal,
+    OrderChannel: OrderChannel
+  ) {
+    const tenMinuesFromNow = new Date(Date.now() + 10 * 60 * 1000);
 
     switch (method) {
       case PaymentMethod.QRIS: {
@@ -31,14 +35,23 @@ export const PaymentService = {
       }
 
       case PaymentMethod.CASH: {
-        const code = randomBytes(4).toString("hex");
+        if (OrderChannel === "ONLINE") {
+          const code = randomBytes(4).toString("hex");
 
-        return {
-          qrisMidtransUrl: null,
-          midtransOrderId: null,
-          internalQrCode: code,
-          expiredInternalQrCode: fiveMinutesFromNow,
-        };
+          return {
+            qrisMidtransUrl: null,
+            midtransOrderId: null,
+            internalQrCode: code,
+            expiredInternalQrCode: tenMinuesFromNow,
+          };
+        } else {
+          return {
+            qrisMidtransUrl: null,
+            midtransOrderId: null,
+            internalQrCode: null,
+            expiredInternalQrCode: null,
+          };
+        }
       }
 
       default:
