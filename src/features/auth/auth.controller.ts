@@ -17,4 +17,11 @@ export const AuthContoller = {
 
     res.json({ message: "User registered successfully", result: user });
   },
+
+  async me(req: Request, res: Response) {
+    const { id } = req.params as { id: string };
+    const user = await AuthService.me(id);
+
+    res.json({ message: "User fetched successfully", result: user });
+  },
 };

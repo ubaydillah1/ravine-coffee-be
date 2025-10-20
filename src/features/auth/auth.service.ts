@@ -29,4 +29,8 @@ export const AuthService = {
 
     return user;
   },
+
+  async me(id: string) {
+    return await AuthRepository.me(id);
+  },
 };

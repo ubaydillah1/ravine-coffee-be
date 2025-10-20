@@ -4,6 +4,7 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get("/me", asyncHandler(AuthContoller.me));
 router.post("/login", asyncHandler(AuthContoller.login));
 
 export default router;

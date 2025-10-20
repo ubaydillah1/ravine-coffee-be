@@ -10,4 +10,10 @@ export const AuthRepository = {
   async registerIfNotExist(data: RegisterInput) {
     return await prisma.user.create({ data: { ...data, role: UserRole.USER } });
   },
+
+  async me(id: string) {
+    return await prisma.user.findUnique({
+      where: { id },
+    });
+  },
 };
