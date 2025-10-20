@@ -18,7 +18,7 @@ export const PaymentWebhookService = {
     ) {
       newStatus = PaymentStatus.SUCCESS;
 
-      HistoryRepository.createHistory({
+      await HistoryRepository.createHistory({
         orderId: order.id,
         orderStatus: OrderStatus.COMPLETED,
       });
@@ -37,7 +37,7 @@ export const PaymentWebhookService = {
       transaction_status === "deny" ||
       transaction_status === "expire"
     ) {
-      HistoryRepository.createHistory({
+      await HistoryRepository.createHistory({
         orderId: order.id,
         orderStatus: OrderStatus.CANCELED,
       });

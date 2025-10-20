@@ -85,7 +85,7 @@ export const OrderService = {
       orderChannel: data.orderChannel,
     });
 
-    HistoryRepository.createHistory({
+    await HistoryRepository.createHistory({
       orderId: order.id,
       orderStatus: OrderStatus.DRAFT,
     });
@@ -123,7 +123,7 @@ export const OrderService = {
         PaymentStatus.CANCELLED
       );
 
-      HistoryRepository.createHistory({
+      await HistoryRepository.createHistory({
         orderId: order.id,
         orderStatus: OrderStatus.CANCELED,
       });
@@ -135,7 +135,7 @@ export const OrderService = {
         PaymentStatus.SUCCESS
       );
 
-      HistoryRepository.createHistory({
+      await HistoryRepository.createHistory({
         orderId: order.id,
         orderStatus: OrderStatus.COMPLETED,
       });
@@ -160,11 +160,6 @@ export const OrderService = {
       existingOrder.id,
       OrderStatus.OPENBILL
     );
-
-    HistoryRepository.createHistory({
-      orderId: order.id,
-      orderStatus: OrderStatus.OPENBILL,
-    });
 
     return order;
   },
