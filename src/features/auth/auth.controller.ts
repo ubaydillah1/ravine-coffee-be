@@ -19,7 +19,10 @@ export const AuthContoller = {
   },
 
   async me(req: Request, res: Response) {
-    const { id } = req.params as { id: string };
+    const id = req.user?.id;
+
+    if (!id) throw new Error("User not found");
+
     const user = await AuthService.me(id);
 
     res.json({ message: "User fetched successfully", result: user });
