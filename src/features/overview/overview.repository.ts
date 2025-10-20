@@ -103,7 +103,7 @@ export const OverviewRepository = {
       by: ["productName"],
       _sum: { subtotal: true },
       where: {
-        order: {
+        Order: {
           orderStatus: OrderStatus.COMPLETED,
           createdAt: { gte, lte },
         },
