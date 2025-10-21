@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import router from "./routes/index.js";
 import cors from "cors";
+import { AppError } from "./utils/errors.js";
 
 const app = express();
 
@@ -22,6 +23,13 @@ app.use("/api", router);
 
 // Error handler
 app.use((err: Error, __: Request, res: Response, _: NextFunction) => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      message: err.message,
+    });
+    return;
+  }
+
   res.status(500).json({ message: err.message });
 });
 

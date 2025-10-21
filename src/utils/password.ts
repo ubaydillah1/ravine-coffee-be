@@ -10,4 +10,4 @@ export const PasswordUtils = {
   async compare(plain: string, hashed: string) {
     return bcrypt.compare(plain, hashed);
   },
-};``
+};
