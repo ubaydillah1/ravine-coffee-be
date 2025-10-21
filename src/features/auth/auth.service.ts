@@ -11,7 +11,7 @@ export const AuthService = {
     if (!user) throw new NotFoundError("User not found");
     if (!user.password) throw new BadRequestError("User is Customer");
 
-    const isValid = PasswordUtils.compare(data.password, user.password!);
+    const isValid = await PasswordUtils.compare(data.password, user.password!);
 
     if (!isValid) throw new BadRequestError("Invalid credentials");
 
