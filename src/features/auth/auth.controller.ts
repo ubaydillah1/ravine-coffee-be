@@ -5,9 +5,12 @@ export const AuthContoller = {
   async login(req: Request, res: Response) {
     const data = req.body;
 
-    const { token } = await AuthService.login(data);
+    const { token, user } = await AuthService.login(data);
 
-    res.json({ message: "Login successful", result: token });
+    res.json({
+      message: "Login successful",
+      result: { token, user },
+    });
   },
 
   async registerIfNotExists(req: Request, res: Response) {
