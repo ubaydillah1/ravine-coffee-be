@@ -33,6 +33,7 @@ export const OrderRepository = {
             productImage: item.productImage,
             productId: item.productId,
             productPrice: item.productPrice,
+            productCategory: item.productCategory,
           })),
         },
       },

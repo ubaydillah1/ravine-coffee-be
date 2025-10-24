@@ -26,6 +26,7 @@ export const OrderFactory = {
         productName: product.name,
         productImage: product.image,
         productPrice: product.price,
+        productCategory: product.category,
         quantity,
         price: product.price,
         subtotal,

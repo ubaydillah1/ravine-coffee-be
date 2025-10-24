@@ -3,6 +3,7 @@ import type {
   OrderType,
   PaymentMethod,
   Prisma,
+  ProductCategory,
 } from "@prisma/client";
 import type { CheckoutSchema, OrdersQuerySchema } from "./order.scheme.js";
 import type { z } from "zod";
@@ -37,5 +38,6 @@ export type CreateOrderInput = {
     productImage: string | null;
     productPrice: Prisma.Decimal;
     productId: string;
+    productCategory: ProductCategory;
   }[];
 };

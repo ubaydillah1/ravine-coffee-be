@@ -94,9 +94,10 @@ model OrderItem {
   productId String?
 
   // PRODUCT COPY WHEN DELETED
-  productName  String
-  productPrice Decimal @db.Decimal(10, 2)
-  productImage String?
+  productName     String
+  productPrice    Decimal         @db.Decimal(10, 2)
+  productImage    String?
+  productCategory ProductCategory @default(COFFEE)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

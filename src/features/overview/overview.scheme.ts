@@ -16,3 +16,7 @@ export const OverviewQuerySchema = z.object({
     .default("today")
     .nullable(),
 });
+
+export const RevenueChartQuerySchema = z.object({
+  period: z.enum(["weekly", "monthly", "annual"]).default("monthly"),
+});
