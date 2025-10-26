@@ -6,13 +6,15 @@ import express, {
 import router from "./routes/index.js";
 import cors from "cors";
 import { AppError } from "./utils/errors.js";
+import prisma from "./lib/prisma.js";
+import bcrypt from "bcrypt";
 
 const app = express();
 
 app.use(
   cors({
     origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
@@ -20,6 +22,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+app.get("/create-admin", async (_: Request, res: Response) => {
+  const password = await bcrypt.hash("admin123", 10);
+  await prisma.user.create({
+    data: {
+      email: "admin@gmail.com",
+      password,
+    },
+  });
+  res.json({ message: "Admin created successfully" });
+});
 
 // Error handler
 app.use((err: Error, __: Request, res: Response, _: NextFunction) => {

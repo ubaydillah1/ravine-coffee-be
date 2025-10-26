@@ -25,9 +25,7 @@ export const ProductController = {
       category,
     });
 
-    res
-      .status(200)
-      .json({ message: "Products fetched successfully", result: products });
+    res.json({ message: "Products fetched successfully", result: products });
   },
 
   async updateProduct(req: Request, res: Response) {
@@ -37,14 +35,35 @@ export const ProductController = {
 
     const product = await ProductService.updateProduct(id, data, file);
 
-    res
-      .status(200)
-      .json({ message: "Product updated successfully", result: product });
+    res.json({ message: "Product updated successfully", result: product });
   },
 
   async deleteProduct(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     await ProductService.deleteProduct(id);
-    res.status(200).json({ message: "Product deleted successfully" });
+    res.json({ message: "Product deleted successfully" });
+  },
+
+  async getTotalProducts(_: Request, res: Response) {
+    const total = await ProductService.getTotalProducts();
+    res.json({ message: "Total products fetched successfully", result: total });
+  },
+
+  async updateActiveStatusProduct(req: Request, res: Response) {
+    const { id } = req.params as { id: string };
+    const isAvailable = req.body.isAvailable;
+
+    const product = await ProductService.updateActiveStatusProduct(
+      id,
+      isAvailable
+    );
+
+    res.json({ message: "Product updated successfully", result: product });
+  },
+
+  async getRecommendationProducts(_: Request, res: Response) {
+    const products = await ProductService.getRecommendationProducts();
+
+    res.json({ message: "Products fetched successfully", result: products });
   },
 };

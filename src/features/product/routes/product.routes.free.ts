@@ -12,4 +12,9 @@ router.get(
   asyncHandler(ProductController.getAllProducts)
 );
 
+router.get(
+  "/recommendations",
+  asyncHandler(ProductController.getRecommendationProducts)
+);
+
 export default router;

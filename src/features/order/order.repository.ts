@@ -191,4 +191,26 @@ export const OrderRepository = {
       where: { internalQrCode: code },
     });
   },
+
+  async getTotalOrders() {
+    return prisma.order.count();
+  },
+
+  async getCompletedOrders() {
+    return prisma.order.count({
+      where: { orderStatus: "COMPLETED" },
+    });
+  },
+
+  async getCanceledOrders() {
+    return prisma.order.count({
+      where: { orderStatus: "CANCELED" },
+    });
+  },
+
+  async getInProgressOrders() {
+    return prisma.order.count({
+      where: { orderStatus: "INPROGRESS" },
+    });
+  },
 };

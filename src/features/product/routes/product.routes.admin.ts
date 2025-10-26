@@ -13,6 +13,8 @@ router.get(
   asyncHandler(ProductController.getAllProducts)
 );
 
+router.get("/count", asyncHandler(ProductController.getTotalProducts));
+
 router.post(
   "/",
   upload.single("image"),
@@ -25,6 +27,11 @@ router.put(
   upload.single("image"),
   validate(ProductScheme),
   asyncHandler(ProductController.updateProduct)
+);
+
+router.patch(
+  "/status/:id",
+  asyncHandler(ProductController.updateActiveStatusProduct)
 );
 
 router.delete("/:id", asyncHandler(ProductController.deleteProduct));

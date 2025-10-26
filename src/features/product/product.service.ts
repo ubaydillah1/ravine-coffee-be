@@ -56,4 +56,33 @@ export const ProductService = {
 
     return await ProductRepository.deleteProduct(id);
   },
+
+  async getTotalProducts() {
+    return await ProductRepository.getTotalProduct();
+  },
+
+  async updateActiveStatusProduct(id: string, isAvailable: boolean) {
+    const existingProduct = await ProductRepository.getProductById(id);
+    if (!existingProduct) throw new NotFoundError("Product not found");
+
+    return await ProductRepository.updateActiveStatusProduct(id, isAvailable);
+  },
+
+  async getRecommendationProducts(limit: number = 6) {
+    const topOrdered = await ProductRepository.getTopOrderedProductIds(limit);
+
+    const productIds = topOrdered.map((item) => item.productId!);
+
+    if (productIds.length === 0) return [];
+
+    const products = await ProductRepository.findProductsForRecommendation(
+      productIds
+    );
+
+    const orderedProducts = productIds
+      .map((id) => products.find((p) => p.id === id))
+      .filter(Boolean) as typeof products;
+
+    return orderedProducts;
+  },
 };

@@ -109,6 +109,7 @@ model Product {
   id          String          @id @default(uuid())
   name        String
   description String?
+  slug        String          @unique
   price       Decimal         @db.Decimal(10, 2)
   image       String?
   isAvailable Boolean         @default(true)

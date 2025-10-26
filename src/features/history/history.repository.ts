@@ -1,12 +1,34 @@
+import { endOfDay, parseISO, startOfDay } from "date-fns";
 import prisma from "../../lib/prisma.js";
 import type { HistoryQueryScheme, HistoryScheme } from "./history.types.js";
+import { OrderRepository } from "../order/order.repository.js";
 
 export const HistoryRepository = {
-  async getHistory({ limit = 20, cursor }: HistoryQueryScheme) {
+  async getHistory({ limit = 20, cursor, date, status }: HistoryQueryScheme) {
+    let filter = {};
+
+    if (date) {
+      const targetDate = parseISO(date);
+      filter = {
+        ...filter,
+        createdAt: {
+          gte: startOfDay(targetDate),
+          lte: endOfDay(targetDate),
+        },
+      };
+    }
+
+    if (status) {
+      filter = { ...filter, orderStatus: status };
+    }
+
     const history = await prisma.orderHistory.findMany({
-      take: limit,
+      take: limit + 1,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
+      where: {
+        ...filter,
+      },
       select: {
         orderStatus: true,
         id: true,
@@ -15,6 +37,7 @@ export const HistoryRepository = {
             id: true,
             tableNumber: true,
             totalAmount: true,
+            createdAt: true,
             Customer: {
               select: {
                 fullName: true,
@@ -26,7 +49,6 @@ export const HistoryRepository = {
     });
 
     let nextCursor = null;
-
     if (history.length > limit) nextCursor = history.pop()?.id;
 
     return { history, nextCursor };
@@ -82,5 +104,26 @@ export const HistoryRepository = {
 
   async createHistory(data: HistoryScheme) {
     return await prisma.orderHistory.create({ data });
+  },
+
+  async getSummary() {
+    const [
+      totalOrders,
+      totalCompletedOrders,
+      totalCanceledOrders,
+      inProgressOrders,
+    ] = await Promise.all([
+      OrderRepository.getTotalOrders(),
+      OrderRepository.getCompletedOrders(),
+      OrderRepository.getCanceledOrders(),
+      OrderRepository.getInProgressOrders(),
+    ]);
+
+    return {
+      totalOrders,
+      totalCompletedOrders,
+      totalCanceledOrders,
+      inProgressOrders,
+    };
   },
 };
