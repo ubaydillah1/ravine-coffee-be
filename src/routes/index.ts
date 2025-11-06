@@ -9,6 +9,7 @@ import paymentRoutes from "../features/payment/payment.routes.js";
 import productFreeRoutes from "../features/product/routes/product.routes.free.js";
 import overviewRoutes from "../features/overview/overview.routes.js";
 import historyRoutes from "../features/history/history.routes.js";
+import cashierProuctRoutes from "../features/product/routes/product.routes.cashier.js";
 import { safeGuard } from "../middlewares/safeGuard.js";
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use("/payment", paymentRoutes);
 router.use("/products", productFreeRoutes);
 
 router.use("/cashier/orders", safeGuard("CASHIER"), cashierOrderRoutes);
+router.use("/cashier/products", safeGuard("CASHIER"), cashierProuctRoutes);
 
 router.use("/admin/users", safeGuard("ADMIN"), userRoutes);
 router.use("/admin/products", safeGuard("ADMIN"), productAdminRoutes);

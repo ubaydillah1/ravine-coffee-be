@@ -7,8 +7,20 @@ import { ProductRepository } from "./product.repository.js";
 import type { ProductScheme, ProductsQuerySchema } from "./product.types.js";
 
 export const ProductService = {
-  async getAllProducts({ limit, cursor, category }: ProductsQuerySchema) {
-    return await ProductRepository.getAllProduct({ limit, cursor, category });
+  async getAllProducts({
+    limit,
+    cursor,
+    category,
+    type,
+    search,
+  }: ProductsQuerySchema) {
+    return await ProductRepository.getAllProduct({
+      limit,
+      cursor,
+      category,
+      type,
+      search,
+    });
   },
 
   async createProduct(data: ProductScheme, file: Express.Multer.File) {
@@ -16,7 +28,13 @@ export const ProductService = {
 
     const fileLink = await uploadToSupabase(file, "product-images");
 
-    return await ProductRepository.createProduct(data, fileLink);
+    const slug = data.name.toLowerCase().replace(/ /g, "-");
+    const isProductSlugExist = await ProductRepository.findProductBySlug(slug);
+
+    if (isProductSlugExist)
+      throw new BadRequestError("Product name already exist");
+
+    return await ProductRepository.createProduct({ data, fileLink, slug });
   },
 
   async updateProduct(
@@ -37,11 +55,14 @@ export const ProductService = {
       fileLink = await uploadToSupabase(file, "product-images");
     }
 
-    const updatedProduct = await ProductRepository.updateProduct(
+    const slug = data.name.toLowerCase().replace(/ /g, "-");
+
+    const updatedProduct = await ProductRepository.updateProduct({
       id,
       data,
-      fileLink
-    );
+      ...(fileLink ? { fileLink } : ""),
+      slug,
+    });
 
     return updatedProduct;
   },
@@ -84,5 +105,14 @@ export const ProductService = {
       .filter(Boolean) as typeof products;
 
     return orderedProducts;
+  },
+
+  async getProductBySlug(slug: string) {
+    if (!slug) throw new BadRequestError("Product slug is required");
+
+    const product = await ProductRepository.findProductBySlug(slug);
+    if (!product) throw new NotFoundError("Product not found");
+
+    return await ProductRepository.findProductBySlug(slug);
   },
 };

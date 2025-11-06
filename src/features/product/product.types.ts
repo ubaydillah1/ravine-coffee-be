@@ -3,3 +3,6 @@ import type { ProductScheme, ProductsQuerySchema } from "./product.scheme.js";
 
 export type ProductScheme = z.infer<typeof ProductScheme>;
 export type ProductsQuerySchema = z.infer<typeof ProductsQuerySchema>;
+
+export const ProductTypes = ["ACTIVE", "ALL", "INACTIVE"] as const;
+export type ProductTypes = (typeof ProductTypes)[number];

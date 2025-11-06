@@ -9,6 +9,7 @@ export const RegisterScheme = z.object({
   fullName: z.string().min(3, "Full name is required"),
   phoneNumber: z
     .string()
-    .regex(/^(?:\+62|62|0)[2-9][0-9]{7,11}$/, "Invalid phone number format"),
+    .regex(/^(?:\+62|62|0)[2-9][0-9]{7,11}$/, "Invalid phone number format")
+    .optional(),
   email: z.email(),
 });

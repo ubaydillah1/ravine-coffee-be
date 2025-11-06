@@ -13,6 +13,7 @@ router.get(
 );
 
 router.get("/:id", asyncHandler(OrderController.getSingleOrder));
+
 router.patch(
   "/:id",
   validate(StatusOrderScheme),

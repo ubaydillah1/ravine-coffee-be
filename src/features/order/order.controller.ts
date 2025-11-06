@@ -26,7 +26,7 @@ export const OrderController = {
 
     res
       .status(201)
-      .json({ message: "Order created successfully", result: response });
+      .json({ message: "Order created successfully", result: response.data });
   },
 
   async getOrders(req: Request, res: Response) {
@@ -41,11 +41,14 @@ export const OrderController = {
     const orderDateParam = req.query.orderDate as string | undefined;
     const orderDate = orderDateParam ? new Date(orderDateParam) : undefined;
 
+    const search = req.query.search as string;
+
     const result = await OrderService.getOrders({
       limit,
       cursor,
       status,
       orderDate,
+      search,
     });
     res.status(200).json({ message: "Orders fetched successfully", result });
   },
@@ -75,8 +78,15 @@ export const OrderController = {
     const { code } = req.params as { code: string };
     const result = await OrderService.verifyInternalQris(code);
 
-    res
-      .status(200)
-      .json({ message: "Order updated successfully", result: result.id });
+    res.json({ message: "Order updated successfully", result });
+  },
+
+  async checkOrderStatus(req: Request, res: Response) {
+    const { id } = req.params as { id: string };
+    const result = await OrderService.checkOrderStatus(id);
+    res.json({
+      message: "Order status fetched successfully",
+      result: result,
+    });
   },
 };

@@ -65,7 +65,7 @@ export const OrderService = {
 
     const order = await OrderRepository.createOrder({
       customerId: customer.id,
-      tableNumber: data.tableNumber,
+      tableNumber: data.tableNumber || "",
       totalAmount,
       orderType: data.orderType,
       paymentMethod: data.paymentMethod,
@@ -107,39 +107,35 @@ export const OrderService = {
     return await OrderRepository.getOrderById(id);
   },
 
-  async getOrders({ limit, cursor, status, orderDate }: OrdersQueryInput) {
+  async getOrders({
+    limit,
+    cursor,
+    status,
+    orderDate,
+    search,
+  }: OrdersQueryInput) {
     return await OrderRepository.getOrders({
       limit,
       cursor,
       status,
+      search,
       orderDate,
     });
   },
 
   async updateOrderStatus(id: string, status: OrderStatus) {
     if (status === OrderStatus.CANCELED) {
-      const order = await OrderRepository.updatePaymentStatus(
-        id,
-        PaymentStatus.CANCELLED
-      );
-
-      await HistoryRepository.createHistory({
-        orderId: order.id,
-        orderStatus: OrderStatus.CANCELED,
-      });
+      await OrderRepository.updatePaymentStatus(id, PaymentStatus.CANCELLED);
     }
 
     if (status === OrderStatus.COMPLETED) {
-      const order = await OrderRepository.updatePaymentStatus(
-        id,
-        PaymentStatus.SUCCESS
-      );
-
-      await HistoryRepository.createHistory({
-        orderId: order.id,
-        orderStatus: OrderStatus.COMPLETED,
-      });
+      await OrderRepository.updatePaymentStatus(id, PaymentStatus.SUCCESS);
     }
+
+    await HistoryRepository.createHistory({
+      orderId: id,
+      orderStatus: status,
+    });
 
     return await OrderRepository.updateOrderStatus(id, status);
   },
@@ -162,5 +158,12 @@ export const OrderService = {
     );
 
     return order;
+  },
+
+  async checkOrderStatus(id: string) {
+    const order = await OrderRepository.getOrderById(id);
+    if (!order) throw new NotFoundError("Order not found");
+
+    return await OrderRepository.checkOrderStatus(id);
   },
 };

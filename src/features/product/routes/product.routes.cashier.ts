@@ -9,12 +9,7 @@ const router = Router();
 router.get(
   "/",
   validate(ProductsQuerySchema, "query"),
-  asyncHandler(ProductController.getProductsActive)
-);
-
-router.get(
-  "/recommendations",
-  asyncHandler(ProductController.getRecommendationProducts)
+  asyncHandler(ProductController.getAllProducts)
 );
 
 router.get("/:slug", asyncHandler(ProductController.getProductBySlug));

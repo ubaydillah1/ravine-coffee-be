@@ -13,4 +13,6 @@ router.post(
   OrderController.createOrder
 );
 
+router.get("/:id", asyncHandler(OrderController.checkOrderStatus));
+
 export default router;

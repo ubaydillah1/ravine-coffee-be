@@ -18,11 +18,34 @@ export const ProductController = {
     const category = (req.query.category as string).toUpperCase() as
       | ProductCategory
       | undefined;
+    const search = req.query.search as string | undefined;
+
+    const type = "ALL";
 
     const products = await ProductService.getAllProducts({
       limit,
       cursor,
       category,
+      type,
+      search,
+    });
+
+    res.json({ message: "Products fetched successfully", result: products });
+  },
+
+  async getProductsActive(req: Request, res: Response) {
+    const limit = parseInt(req.query.limit as string) || 12;
+    const cursor = req.query.cursor as string | undefined;
+    const category = (req.query.category as string).toUpperCase() as
+      | ProductCategory
+      | undefined;
+    const type = "ACTIVE";
+
+    const products = await ProductService.getAllProducts({
+      limit,
+      cursor,
+      category,
+      type,
     });
 
     res.json({ message: "Products fetched successfully", result: products });
@@ -65,5 +88,12 @@ export const ProductController = {
     const products = await ProductService.getRecommendationProducts();
 
     res.json({ message: "Products fetched successfully", result: products });
+  },
+
+  async getProductBySlug(req: Request, res: Response) {
+    const { slug } = req.params as { slug: string };
+
+    const product = await ProductService.getProductBySlug(slug);
+    res.json({ message: "Product fetched successfully", result: product });
   },
 };

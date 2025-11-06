@@ -12,7 +12,7 @@ export const PaymentWebhookService = {
 
     let newStatus = order.paymentStatus;
 
-    if (
+    if (  
       transaction_status === "capture" ||
       transaction_status === "settlement"
     ) {
@@ -44,6 +44,8 @@ export const PaymentWebhookService = {
 
       newStatus = PaymentStatus.CANCELLED;
     }
+
+    console.log("newStatus", newStatus);
 
     await OrderRepository.updatePaymentStatus(order.id, newStatus);
     await OrderRepository.updateOrderStatus(order.id, OrderStatus.INPROGRESS);

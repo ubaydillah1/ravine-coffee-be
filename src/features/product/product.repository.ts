@@ -17,21 +17,53 @@ export const ProductRepository = {
     });
   },
 
-  async updateProduct(id: string, data: ProductScheme, fileLink?: string) {
+  async updateProduct({
+    id,
+    data,
+    slug,
+    fileLink,
+  }: {
+    id: string;
+    data: ProductScheme;
+    slug: string;
+    fileLink?: string;
+  }) {
     return await prisma.product.update({
       where: { id },
       data: {
         ...data,
+        slug,
         description: data.description ?? null,
         ...(fileLink && { image: fileLink }),
       },
     });
   },
 
-  async getAllProduct({ limit, cursor, category }: ProductsQuerySchema) {
+  async getAllProduct({
+    limit,
+    cursor,
+    category,
+    type,
+    search,
+  }: ProductsQuerySchema) {
+    const where: any = {};
+
+    if (type === "ACTIVE") where.isAvailable = true;
+    if (type === "INACTIVE") where.isAvailable = false;
+    if (category) where.category = category;
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+        { slug: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
     const products = await prisma.product.findMany({
       take: limit + 1,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
+      where,
       select: {
         name: true,
         id: true,
@@ -40,8 +72,8 @@ export const ProductRepository = {
         isAvailable: true,
         price: true,
         description: true,
+        slug: true,
       },
-      ...(category && { where: { category } }),
     });
 
     let nextCursor = null;
@@ -50,9 +82,15 @@ export const ProductRepository = {
     return { products, nextCursor };
   },
 
-  async createProduct(data: ProductScheme, fileLink?: string) {
-    const slug = data.name.toLowerCase().replace(/ /g, "-");
-
+  async createProduct({
+    data,
+    fileLink,
+    slug,
+  }: {
+    data: ProductScheme;
+    fileLink?: string;
+    slug: string;
+  }) {
     return await prisma.product.create({
       data: {
         ...data,
@@ -105,7 +143,7 @@ export const ProductRepository = {
     });
   },
 
-  async findProductsBySlug(slug: string) {
-    return prisma.product.findMany({ where: { slug } });
+  async findProductBySlug(slug: string) {
+    return prisma.product.findUnique({ where: { slug } });
   },
 };

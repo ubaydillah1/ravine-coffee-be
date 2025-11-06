@@ -1,6 +1,7 @@
 import { ProductCategory } from "@prisma/client";
 import z from "zod";
 import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
+import { ProductTypes } from "./product.types.js";
 
 export const ProductScheme = z.object({
   name: z.string().min(3, "Product name is required"),
@@ -21,4 +22,6 @@ export const ProductsQuerySchema = InfiniteScrollScheme.extend({
     )
     .transform((val) => val as ProductCategory)
     .optional(),
+  type: z.enum(ProductTypes).default("ALL"),
+  search: z.string().optional(),
 });

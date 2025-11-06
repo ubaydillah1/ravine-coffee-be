@@ -1,11 +1,14 @@
 import { OrderStatus, type PaymentStatus } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
 import type { CreateOrderInput, OrdersQueryInput } from "./order.types.js";
+import { generateRandomCode } from "../../utils/generateRandomCode.js";
 
 export const OrderRepository = {
   async createOrder(data: CreateOrderInput) {
+    const id = generateRandomCode(8);
     return prisma.order.create({
       data: {
+        id,
         customerId: data.customerId,
         cashierId: data.cashierId || null,
         tableNumber: data.tableNumber,
@@ -44,8 +47,13 @@ export const OrderRepository = {
         orderType: true,
         taxAmount: true,
         paymentMethod: true,
+        orderStatus: true,
+        internalQrCode: true,
         subTotalAmount: true,
         discountAmount: true,
+        expiredInternalQrCode: true,
+        totalAmount: true,
+        expiredQrisMidtransUrl: true,
         notes: true,
         Voucher: {
           select: {
@@ -87,7 +95,9 @@ export const OrderRepository = {
         taxAmount: true,
         paymentMethod: true,
         subTotalAmount: true,
+        totalAmount: true,
         discountAmount: true,
+        orderStatus: true,
         notes: true,
         Voucher: {
           select: {
@@ -141,11 +151,24 @@ export const OrderRepository = {
     });
   },
 
-  async getOrders({ limit, cursor, status, orderDate }: OrdersQueryInput) {
+  async getOrders({
+    limit,
+    cursor,
+    status,
+    orderDate,
+    search,
+  }: OrdersQueryInput) {
     const whereClause: any = {};
 
     if (status) {
       whereClause.orderStatus = status;
+    }
+
+    if (search) {
+      whereClause.OR = [
+        { id: { contains: search, mode: "insensitive" } },
+        { Customer: { fullName: { contains: search, mode: "insensitive" } } },
+      ];
     }
 
     if (orderDate) {
@@ -189,6 +212,40 @@ export const OrderRepository = {
   async getOrderByInternalQrCode(code: string) {
     return prisma.order.findUnique({
       where: { internalQrCode: code },
+      select: {
+        id: true,
+        expiredInternalQrCode: true,
+        createdAt: true,
+        tableNumber: true,
+        orderType: true,
+        notes: true,
+        paymentMethod: true,
+        subTotalAmount: true,
+        taxAmount: true,
+        discountAmount: true,
+        totalAmount: true,
+        OrderItem: {
+          select: {
+            quantity: true,
+            subtotal: true,
+            productImage: true,
+            productName: true,
+            productPrice: true,
+          },
+        },
+        Voucher: {
+          select: {
+            code: true,
+          },
+        },
+        Customer: {
+          select: {
+            fullName: true,
+            phoneNumber: true,
+            email: true,
+          },
+        },
+      },
     });
   },
 
@@ -211,6 +268,15 @@ export const OrderRepository = {
   async getInProgressOrders() {
     return prisma.order.count({
       where: { orderStatus: "INPROGRESS" },
+    });
+  },
+
+  async checkOrderStatus(id: string) {
+    return prisma.order.findUnique({
+      where: { id },
+      select: {
+        orderStatus: true,
+      },
     });
   },
 };
