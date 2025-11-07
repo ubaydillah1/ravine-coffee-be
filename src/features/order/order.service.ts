@@ -87,7 +87,7 @@ export const OrderService = {
 
     await HistoryRepository.createHistory({
       orderId: order.id,
-      orderStatus: OrderStatus.DRAFT,
+      orderStatus: OrderStatus.OPENBILL,
     });
 
     let svgQrCode = null;
