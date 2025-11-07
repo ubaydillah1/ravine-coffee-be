@@ -1,5 +1,5 @@
 import express from "express";
-import userRoutes from "../features/user/user.routes.js";
+import userRoutes from "../features/user/routes/user.routes.admin.js";
 import orderRoutes from "../features/order/routes/order.user.routes.js";
 import authRoutes from "../features/auth/auth.routes.js";
 import productAdminRoutes from "../features/product/routes/product.routes.admin.js";
@@ -10,6 +10,7 @@ import productFreeRoutes from "../features/product/routes/product.routes.free.js
 import overviewRoutes from "../features/overview/overview.routes.js";
 import historyRoutes from "../features/history/history.routes.js";
 import cashierProuctRoutes from "../features/product/routes/product.routes.cashier.js";
+import userAuthenticatedRoutes from "../features/user/routes/user.routes.authenticated.js";
 import { safeGuard } from "../middlewares/safeGuard.js";
 const router = express.Router();
 
@@ -26,5 +27,11 @@ router.use("/admin/products", safeGuard("ADMIN"), productAdminRoutes);
 router.use("/admin/vouchers", safeGuard("ADMIN"), voucherRoutes);
 router.use("/admin/overview", safeGuard("ADMIN"), overviewRoutes);
 router.use("/admin/history", safeGuard("ADMIN"), historyRoutes);
+
+router.use(
+  "/profile",
+  safeGuard(["ADMIN", "CASHIER"]),
+  userAuthenticatedRoutes
+);
 
 export default router;

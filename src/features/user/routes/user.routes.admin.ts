@@ -1,10 +1,10 @@
-import { asyncHandler } from "../../middlewares/asyncHandler.js";
+import { asyncHandler } from "../../../middlewares/asyncHandler.js";
 import { Router } from "express";
-import { UserController } from "./user.controller.js";
-import { validate } from "../../middlewares/validate.js";
-import { CashierSchema } from "./user.scheme.js";
-import { upload } from "../../middlewares/upload.js";
-import { InfiniteScrollScheme } from "../../schemas/infiniteScroll.js";
+import { UserController } from "../user.controller.js";
+import { validate } from "../../../middlewares/validate.js";
+import { CashierSchema, ChangeStatusSchema } from "../user.scheme.js";
+import { upload } from "../../../middlewares/upload.js";
+import { InfiniteScrollScheme } from "../../../schemas/infiniteScroll.js";
 
 const router = Router();
 
@@ -15,6 +15,12 @@ router.get(
 );
 
 router.get("/:id", asyncHandler(UserController.getCashierById));
+
+router.patch(
+  "/:id",
+  validate(ChangeStatusSchema),
+  asyncHandler(UserController.changeStatus)
+);
 
 router.post(
   "/",

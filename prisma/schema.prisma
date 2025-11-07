@@ -57,7 +57,7 @@ model Order {
   expiredInternalQrCode DateTime?
 
   // STATUS & TYPE
-  orderStatus   OrderStatus   @default(DRAFT)
+  orderStatus   OrderStatus   @default(OPENBILL)
   orderType     OrderType     @default(DINE_IN)
   paymentStatus PaymentStatus @default(PENDING)
   paymentMethod PaymentMethod @default(CASH)
@@ -200,5 +200,4 @@ enum OrderStatus {
   INPROGRESS
   OPENBILL
   CANCELED
-  DRAFT
 }

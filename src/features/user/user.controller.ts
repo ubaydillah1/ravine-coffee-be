@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { UserService } from "./user.service.js";
+import type { UserStatus } from "@prisma/client";
 
 export const UserController = {
   async createCashier(req: Request, res: Response) {
@@ -42,5 +43,36 @@ export const UserController = {
     const cashier = await UserService.updateCashier(id, data, file);
 
     res.json({ message: "Cashier updated successfully", result: cashier });
+  },
+
+  async changeStatus(req: Request, res: Response) {
+    const { id } = req.params as { id: string };
+    const status = (req.body.status as string).toUpperCase() as UserStatus;
+
+    await UserService.changeStatus(id, status);
+
+    res.json({
+      message: "Cashier status updated successfully",
+    });
+  },
+
+  async editProfile(req: Request, res: Response) {
+    const data = req.body;
+    const file = req.file as Express.Multer.File | undefined;
+    const id = req.user?.id;
+
+    if (!id) throw new Error("User not found");
+    const profile = await UserService.editProfile(id, data, file);
+
+    res.json({ message: "Profile updated successfully", result: profile });
+  },
+
+  async removeAvatar(req: Request, res: Response) {
+    const id = req.user?.id;
+
+    if (!id) throw new Error("User not found");
+    const profile = await UserService.removeAvatar(id);
+
+    res.json({ message: "Profile updated successfully", result: profile });
   },
 };

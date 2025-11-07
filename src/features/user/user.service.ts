@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { UserRole, UserStatus, type User } from "@prisma/client";
 import { UserRepository } from "./user.repository.js";
 import type { CashierQueryType, CashierType } from "./user.types.js";
 import bcrypt from "bcrypt";
@@ -75,5 +75,40 @@ export const UserService = {
     }
 
     return UserRepository.update(id, data, avatarUrl);
+  },
+
+  async changeStatus(id: string, status: UserStatus) {
+    const cashier = await UserRepository.getById(id);
+    if (!cashier) throw new NotFoundError("Cashier not found");
+
+    return UserRepository.changeStatus(id, status);
+  },
+
+  async editProfile(id: string, data: User, file?: Express.Multer.File) {
+    const exisistingUser = await UserRepository.getById(id);
+    if (!exisistingUser) throw new NotFoundError("Cashier not found");
+
+    if (exisistingUser.avatar) {
+      await deleteFromSupabase(exisistingUser.avatar, "avatars");
+    }
+
+    let fileLink = exisistingUser.avatar ?? undefined;
+
+    if (file) {
+      fileLink = await uploadToSupabase(file, "avatars");
+    }
+
+    return UserRepository.editProfile(id, data, fileLink);
+  },
+
+  async removeAvatar(id: string) {
+    const exisistingUser = await UserRepository.getById(id);
+    if (!exisistingUser) throw new NotFoundError("Cashier not found");
+
+    if (exisistingUser.avatar) {
+      await deleteFromSupabase(exisistingUser.avatar, "avatars");
+    }
+
+    return UserRepository.removeAvatar(id);
   },
 };

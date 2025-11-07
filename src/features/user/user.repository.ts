@@ -1,4 +1,4 @@
-import { UserRole } from "@prisma/client";
+import { UserRole, UserStatus, type User } from "@prisma/client";
 import prisma from "../../lib/prisma.js";
 import type { CashierQueryType, CashierType } from "./user.types.js";
 export const UserRepository = {
@@ -30,6 +30,10 @@ export const UserRepository = {
     return { cashier, nextCursor };
   },
 
+  async changeStatus(id: string, status: UserStatus) {
+    return prisma.user.update({ where: { id }, data: { status } });
+  },
+
   async getById(id: string) {
     return prisma.user.findUnique({ where: { id } });
   },
@@ -43,5 +47,16 @@ export const UserRepository = {
 
   async delete(id: string) {
     return prisma.user.delete({ where: { id } });
+  },
+
+  async editProfile(id: string, data: User, fileLink?: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { ...data, ...(fileLink && { avatar: fileLink }) },
+    });
+  },
+
+  async removeAvatar(id: string) {
+    return prisma.user.update({ where: { id }, data: { avatar: null } });
   },
 };

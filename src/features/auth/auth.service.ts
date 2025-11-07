@@ -15,6 +15,11 @@ export const AuthService = {
 
     if (!isValid) throw new BadRequestError("Invalid credentials");
 
+    if (user.role === "CASHIER" && user.status === "INACTIVE")
+      throw new BadRequestError(
+        "Your account is inactive, please contact admin"
+      );
+
     const token = generateToken({ id: user.id, email: user.email });
 
     return { user, token };
