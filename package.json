@@ -25,6 +25,7 @@
     "midtrans-client": "^1.4.3",
     "multer": "^2.0.2",
     "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1",
     "tsx": "^4.20.6",
     "zod": "^4.1.11"
   },

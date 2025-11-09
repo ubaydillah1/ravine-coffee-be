@@ -16,17 +16,24 @@ import { config } from "../../lib/config.js";
 import { generateQrisCodeSVG } from "../../utils/qrcode.js";
 import { VoucherRepository } from "../voucher/voucher.repository.js";
 import { HistoryRepository } from "../history/history.repository.js";
+import { io } from "../../index.js";
+import { SOCKET_EVENTS } from "../../constants/socketEvents.js";
+import { appendRandomToEmail } from "../../utils/appendRandomToEmail.js";
 
 export const OrderService = {
   async create(data: CheckoutInput) {
     const user = await AuthRepository.existingEmail(data.email);
-    const customer =
-      user ??
-      (await AuthRepository.registerIfNotExist({
-        email: data.email,
-        fullName: data.fullName,
-        phoneNumber: data.phoneNumber,
-      }));
+    const customer = user
+      ? await AuthRepository.registerIfNotExist({
+          email: appendRandomToEmail(data.email),
+          fullName: data.fullName,
+          phoneNumber: data.phoneNumber,
+        })
+      : await AuthRepository.registerIfNotExist({
+          email: data.email,
+          fullName: data.fullName,
+          phoneNumber: data.phoneNumber,
+        });
 
     if (data.cashierId) {
       const cashier = await UserRepository.getById(data.cashierId);
@@ -95,6 +102,8 @@ export const OrderService = {
       const linkVerify = `${config.BASE_URL}/api/orders/verify-qrcode/${paymentResult.internalQrCode}`;
       svgQrCode = await generateQrisCodeSVG(linkVerify);
     }
+
+    io.to("cashiers").emit(SOCKET_EVENTS.CASHIER.REFRESH_ORDER);
 
     return {
       order,

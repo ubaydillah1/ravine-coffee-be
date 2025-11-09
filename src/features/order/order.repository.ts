@@ -13,6 +13,7 @@ export const OrderRepository = {
         cashierId: data.cashierId || null,
         tableNumber: data.tableNumber,
         orderType: data.orderType,
+        orderStatus: OrderStatus.OPENBILL,
         paymentMethod: data.paymentMethod,
         midtransOrderId: data.midtransOrderId || null,
         internalQrCode: data.internalQrCode || null,
@@ -98,6 +99,7 @@ export const OrderRepository = {
         totalAmount: true,
         discountAmount: true,
         orderStatus: true,
+        midtransOrderId: true,
         notes: true,
         Voucher: {
           select: {

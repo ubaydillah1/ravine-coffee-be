@@ -16,4 +16,12 @@ export const PaymentController = {
       });
     }
   },
+
+  async simulatePaymentStatus(req: Request, res: Response) {
+    const orderId = req.params.orderId as string;
+
+    await PaymentWebhookService.simulatePaymentStatus(orderId);
+
+    res.status(200).json({ message: "Payment status simulated" });
+  },
 };
