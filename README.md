@@ -8,7 +8,7 @@ Backend for a cafe order management system built with Express.js, managing API e
 🧑‍💻 Test Accounts
 - Admin: admin@gmail.com / admin123
 - Cashier: cashier1@gmail.com / cashier123
-Visit /login to test different user roles.
+
 ## About
 Ravine Coffee backend powers the cafe order system by handling secure data storage, order processing, user authentication, and integrations. It supports QR code-based ordering, real-time order tracking for kitchen and cashiers, and payment confirmations via webhooks.
 ## Features
