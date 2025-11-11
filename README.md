@@ -27,7 +27,7 @@ Built with Express.js for efficient API routing and middleware. Uses Prisma ORM 
 - 🗄️ Supabase PostgreSQL
 - 💳 Midtrans QRIS
 - 🔌 WebSocket (Socket.io)
-- ☁️ Render
+- ☁️ Vercel
 ## Installation
 Clone the repository:
 ```bash
@@ -75,4 +75,4 @@ pnpm dev
 bun dev
 ```
 The API server will start on http://localhost:3000 (or your specified PORT). Test endpoints using tools like Postman. WebSocket connects on the specified SOCKET_PORT for real-time features.
----
+
