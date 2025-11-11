@@ -23,6 +23,7 @@ Ravine Coffee backend powers the cafe order system by handling secure data stora
 Built with Express.js for efficient API routing and middleware. Uses Prisma ORM for type-safe database queries and schema management. Integrates Midtrans for payment handling and Socket.io for WebSocket communications. Deployed on Render for reliable hosting and auto-scaling.
 ## Key Stack
 - 🚀 Express.js
+- 🌊 Typescript
 - 🛠️ Prisma ORM
 - 🗄️ Supabase PostgreSQL
 - 💳 Midtrans QRIS
