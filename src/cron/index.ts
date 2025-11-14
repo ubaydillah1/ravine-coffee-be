@@ -24,47 +24,53 @@ const channels = ["CASHIER", "ONLINE"];
 
 export const mainCron = async (_: Request, res: Response) => {
   try {
-    const product = products[Math.floor(Math.random() * products.length)];
-    const quantity = Math.floor(Math.random() * 3) + 1;
+    const results: any[] = [];
 
-    if (!product) return res.json({ message: "Product not found" });
+    // create 5 random orders
+    for (let i = 0; i < 5; i++) {
+      const product = products[Math.floor(Math.random() * products.length)];
+      const quantity = Math.floor(Math.random() * 3) + 1;
 
-    const totalAmount = product.price * quantity;
+      if (!product) continue;
 
-    const newOrder = {
-      fullName: "Auto Cron",
-      email: "auto-cron@example.com",
-      phoneNumber: "081234567890",
-      tableNumber: `${Math.floor(Math.random() * 20) + 1}`,
+      const totalAmount = product.price * quantity;
 
-      orderType: orderTypes[Math.floor(Math.random() * orderTypes.length)],
-      paymentMethod:
-        paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-      orderChannel: channels[Math.floor(Math.random() * channels.length)],
+      const newOrder = {
+        fullName: "Auto Cron",
+        email: "auto-cron@example.com",
+        phoneNumber: "081234567890",
+        tableNumber: `${Math.floor(Math.random() * 20) + 1}`,
 
-      notes: "Generated hourly cron data",
-      cashierId: "",
-      totalAmount,
+        orderType: orderTypes[Math.floor(Math.random() * orderTypes.length)],
+        paymentMethod:
+          paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+        orderChannel: channels[Math.floor(Math.random() * channels.length)],
 
-      items: [
-        {
-          productId: product.id,
-          quantity,
-        },
-      ],
-    };
+        notes: "Generated hourly cron data",
+        cashierId: "",
+        totalAmount,
 
-    const response = await fetch(config.BASE_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newOrder),
-    });
+        items: [
+          {
+            productId: product.id,
+            quantity,
+          },
+        ],
+      };
 
-    const result = await response.json();
+      const response = await fetch(config.BASE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      });
+
+      const result = await response.json();
+      results.push(result);
+    }
 
     return res.json({
-      message: "Cron Success (POST → /api/orders)",
-      order: result,
+      message: "Cron Success (Created 5 orders)",
+      orders: results,
     });
   } catch (err) {
     return res.status(500).json({ error: "Cron POST failed" });
