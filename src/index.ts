@@ -11,6 +11,7 @@ import bcrypt from "bcrypt";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { SOCKET_EVENTS } from "./constants/socketEvents.js";
+import { mainCron } from "./cron/index.js";
 
 const app = express();
 const server = createServer(app);
@@ -33,27 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 
-app.get("/create-admin", async (_: Request, res: Response) => {
-  const password = await bcrypt.hash("admin123", 10);
-  await prisma.user.create({
-    data: {
-      email: "admin@gmail.com",
-      password,
-    },
-  });
-  res.json({ message: "Admin created successfully" });
-});
-
-app.get("/orders", async (_: Request, res: Response) => {
-  const orders = await prisma.order.findMany({});
-  res.json({ message: "Orders fetched successfully", result: orders });
-});
-
-app.get("/orders/:id", async (req: Request, res: Response) => {
-  const { id } = req.params as { id: string };
-  const order = await prisma.order.findUnique({ where: { id } });
-  res.json({ message: "Order fetched successfully", result: order });
-});
+app.get("/api/cron/daily", mainCron);
 
 // Error handler
 app.use((err: Error, __: Request, res: Response, _: NextFunction) => {

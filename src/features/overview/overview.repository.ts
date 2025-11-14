@@ -23,7 +23,7 @@ export const OverviewRepository = {
         : getDateRange(period);
 
     const where = {
-      orderStatus: OrderStatus.COMPLETED,
+      orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
       createdAt: range,
     };
 
@@ -99,19 +99,23 @@ export const OverviewRepository = {
         break;
     }
 
+    const whereCurrent = {
+      orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
+      createdAt: { gte: currentFrom, lte: currentTo },
+    };
+
+    const whereLast = {
+      orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
+      createdAt: { gte: lastFrom, lte: lastTo },
+    };
+
     const [currentOrders, lastOrders] = await Promise.all([
       prisma.order.findMany({
-        where: {
-          orderStatus: OrderStatus.COMPLETED,
-          createdAt: { gte: currentFrom, lte: currentTo },
-        },
+        where: whereCurrent,
         select: { createdAt: true, totalAmount: true },
       }),
       prisma.order.findMany({
-        where: {
-          orderStatus: OrderStatus.COMPLETED,
-          createdAt: { gte: lastFrom, lte: lastTo },
-        },
+        where: whereLast,
         select: { createdAt: true, totalAmount: true },
       }),
     ]);
@@ -147,6 +151,7 @@ export const OverviewRepository = {
       last: lastTotals.get(label) ?? 0,
     }));
   },
+
   async getOrderTypes(period: Period = "today") {
     const { gte, lte } = getDateRange(period);
 
@@ -154,27 +159,20 @@ export const OverviewRepository = {
       by: ["orderType"],
       _count: true,
       where: {
-        orderStatus: OrderStatus.COMPLETED,
+        orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
         createdAt: { gte, lte },
       },
     });
 
     const total = data.reduce((sum, d) => sum + d._count, 0);
-
     const defaultTypes = ["DINE_IN", "TAKE_AWAY"];
 
-    const merged = defaultTypes.map((type) => {
+    return defaultTypes.map((type) => {
       const found = data.find((d) => d.orderType === type);
       const count = found?._count ?? 0;
       const percentage = total ? (count / total) * 100 : 0;
-      return {
-        type,
-        count,
-        percentage,
-      };
+      return { type, count, percentage };
     });
-
-    return merged;
   },
 
   async getPaymentMethods(period: Period = "today") {
@@ -184,27 +182,20 @@ export const OverviewRepository = {
       by: ["paymentMethod"],
       _count: true,
       where: {
-        orderStatus: OrderStatus.COMPLETED,
+        orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
         createdAt: { gte, lte },
       },
     });
 
     const total = data.reduce((sum, d) => sum + d._count, 0);
-
     const defaultMethods = ["QRIS", "CASH"];
 
-    const merged = defaultMethods.map((method) => {
+    return defaultMethods.map((method) => {
       const found = data.find((d) => d.paymentMethod === method);
       const count = found?._count ?? 0;
       const percentage = total ? (count / total) * 100 : 0;
-      return {
-        method,
-        count,
-        percentage,
-      };
+      return { method, count, percentage };
     });
-
-    return merged;
   },
 
   async getCategorySales(period: Period = "today") {
@@ -215,7 +206,7 @@ export const OverviewRepository = {
       _count: { productCategory: true },
       where: {
         Order: {
-          orderStatus: OrderStatus.COMPLETED,
+          orderStatus: { notIn: [OrderStatus.OPENBILL, OrderStatus.CANCELED] },
           createdAt: { gte, lte },
         },
       },
@@ -229,9 +220,7 @@ export const OverviewRepository = {
     return Object.values(ProductCategory).map((cat) => {
       const found = grouped.find((g) => g.productCategory === cat);
       const count = found?._count.productCategory ?? 0;
-
       const percentage = totalAll ? (count / totalAll) * 100 : 0;
-
       return {
         category: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
         total: percentage,
