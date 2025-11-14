@@ -6,8 +6,6 @@ import express, {
 import router from "./routes/index.js";
 import cors from "cors";
 import { AppError } from "./utils/errors.js";
-import prisma from "./lib/prisma.js";
-import bcrypt from "bcrypt";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { SOCKET_EVENTS } from "./constants/socketEvents.js";
