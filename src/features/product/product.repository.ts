@@ -129,6 +129,7 @@ export const ProductRepository = {
 
   async findProductsForRecommendation(ids: string[]) {
     return prisma.product.findMany({
+      take: 7,
       where: {
         id: { in: ids },
         isAvailable: true,
