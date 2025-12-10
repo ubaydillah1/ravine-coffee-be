@@ -103,7 +103,7 @@ model OrderItem {
   updatedAt DateTime @updatedAt
 
   @@map("order_items")
-}
+}   
 
 model Product {
   id          String          @id @default(uuid())

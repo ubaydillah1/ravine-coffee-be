@@ -139,6 +139,7 @@ export const ProductRepository = {
         name: true,
         image: true,
         price: true,
+        slug: true,
         category: true,
       },
     });
